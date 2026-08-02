@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /admin
+Disallow: /calendar
+Disallow: /analytics
+Disallow: /saved
+Disallow: /api/
+
+Sitemap: https://social-toolkit-pro.vercel.app/sitemap.xml
