@@ -92,9 +92,16 @@ const CSS = `
 .settings-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;box-sizing:border-box}
 .settings-save-btn{font-family:var(--fh);font-size:12px;font-weight:600;padding:8px 16px;border-radius:10px;border:none;cursor:pointer;background:var(--a1);color:#fff}
 .settings-save-btn:disabled{opacity:0.6;cursor:default}
+
+/* ── GROWTH PERIOD TOGGLE ── */
+.growth-toggle{display:flex;gap:4px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;width:fit-content}
+.growth-toggle button{font-family:var(--fh);font-size:11px;font-weight:600;padding:6px 14px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--text2);transition:all 0.15s}
+.growth-toggle button.active{background:var(--a1);color:#fff}
+.growth-total{color:var(--text3);font-weight:500;font-size:12px}
 `;
 
-const TABS = ["Overview", "Revenue", "Payments", "Users", "Analytics", "Messages"];
+const TABS = ["Overview", "Revenue", "Growth", "Payments", "Users", "Analytics", "Messages"];
+const GROWTH_PERIODS = ["daily", "weekly", "monthly", "yearly"];
 
 export default function Admin() {
   const router = useRouter();
@@ -109,6 +116,7 @@ export default function Admin() {
   const [savingTier, setSavingTier] = useState(null);
   const [costsForm, setCostsForm] = useState({ vercel: "", supabase: "", other: "" });
   const [savingCosts, setSavingCosts] = useState(false);
+  const [growthPeriod, setGrowthPeriod] = useState("weekly");
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -191,6 +199,37 @@ export default function Admin() {
     ? Object.entries(stats.toolCounts).sort((a, b) => b[1] - a[1]).slice(0, 8)
     : [];
   const totalToolUses = topTools.reduce((s, [, c]) => s + c, 0);
+
+  function renderGrowthChart(title, series, key, { color = "var(--a1)", money = false } = {}) {
+    if (!series || series.length === 0) return null;
+    const max = Math.max(...series.map((d) => d[key]), 1);
+    const total = series.reduce((s, d) => s + d[key], 0);
+    return (
+      <div className="ad-section">
+        <div className="ad-section-title">
+          <span>{title}</span>
+          <span className="growth-total">{money ? `$${total.toFixed(2)}` : total.toLocaleString()} total</span>
+        </div>
+        <div className="chart-wrap">
+          {series.map((d, i) => (
+            <div
+              key={i}
+              className="chart-bar"
+              title={`${d.label}: ${money ? "$" + d[key].toFixed(2) : d[key]}`}
+              style={{
+                height: `${(Math.max(d[key], 0) / max) * 100}%`,
+                background: d[key] < 0 ? "#ef4444" : d[key] > 0 ? color : "rgba(255,255,255,0.06)",
+                opacity: d[key] > 0 ? 0.7 + (d[key] / max) * 0.3 : 1,
+              }}
+            />
+          ))}
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--text3)", marginTop: 6 }}>
+          <span>{series[0].label}</span><span>{series[series.length - 1].label}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -431,6 +470,31 @@ export default function Admin() {
                     </tbody>
                   </table>
                 </div>
+              </>
+            )}
+
+            {/* ── GROWTH TAB ── */}
+            {activeTab === "Growth" && (
+              <>
+                <div className="ad-section-label">New users, usage &amp; revenue over time</div>
+                <div className="growth-toggle">
+                  {GROWTH_PERIODS.map((p) => (
+                    <button key={p} className={growthPeriod === p ? "active" : ""} onClick={() => setGrowthPeriod(p)}>
+                      {p[0].toUpperCase() + p.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
+                {!stats.revenueTrackingSince && (
+                  <p style={{ color: "var(--text3)", fontSize: 12, marginBottom: 16 }}>
+                    Revenue history started tracking today — the revenue and profit charts below will fill in as new payments come in through Stripe.
+                  </p>
+                )}
+
+                {renderGrowthChart("New users", stats.growth?.newUsers?.[growthPeriod], "count", { color: "var(--a1)" })}
+                {renderGrowthChart("Usage (generations)", stats.growth?.usage?.[growthPeriod], "count", { color: "var(--a2)" })}
+                {renderGrowthChart("Gross revenue", stats.growth?.revenue?.[growthPeriod], "gross", { color: "var(--a1l)", money: true })}
+                {renderGrowthChart("True net profit", stats.growth?.revenue?.[growthPeriod], "trueNet", { color: "var(--a3)", money: true })}
               </>
             )}
 

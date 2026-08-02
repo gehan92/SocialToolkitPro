@@ -21,6 +21,43 @@ function stripeNet(price) {
   return price - (price * STRIPE_FEE_PCT + STRIPE_FEE_FIXED);
 }
 
+// Builds `count` consecutive period windows ending "now", oldest first -
+// shared by the daily/weekly/monthly/yearly growth charts below.
+function periodBoundaries(now, granularity, count) {
+  const periods = [];
+  for (let i = count - 1; i >= 0; i--) {
+    let start, end, label;
+    if (granularity === "daily") {
+      start = new Date(now); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - i);
+      end = new Date(start); end.setDate(end.getDate() + 1);
+      label = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    } else if (granularity === "weekly") {
+      start = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+      end = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      label = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    } else if (granularity === "monthly") {
+      start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      label = start.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+    } else {
+      start = new Date(now.getFullYear() - i, 0, 1);
+      end = new Date(now.getFullYear() - i + 1, 0, 1);
+      label = String(start.getFullYear());
+    }
+    periods.push({ start, end, label });
+  }
+  return periods;
+}
+
+function bucketCount(rows, dateField, periods) {
+  return periods.map(({ start, end, label }) => ({
+    label,
+    count: rows.filter((r) => { const d = new Date(r[dateField]); return d >= start && d < end; }).length,
+  }));
+}
+
+const GROWTH_GRANULARITIES = [["daily", 30], ["weekly", 12], ["monthly", 12], ["yearly", 5]];
+
 export default async function handler(req, res) {
   const user = await getAuthUser(req);
   if (!user || !isAdminEmail(user.email)) {
@@ -37,6 +74,7 @@ export default async function handler(req, res) {
     { data: dailyUsage },
     { data: subscriptions },
     { data: settingsRow },
+    { data: revenueEvents },
   ] = await Promise.all([
     supabaseAdmin.from("profiles").select("subscription_tier, created_at"),
     supabaseAdmin.from("api_usage_logs").select("endpoint, created_at, tokens_used, status_code, user_id"),
@@ -44,6 +82,7 @@ export default async function handler(req, res) {
     supabaseAdmin.from("daily_usage").select("user_id, generations_count, usage_date"),
     supabaseAdmin.from("subscriptions").select("status, created_at, updated_at"),
     supabaseAdmin.from("admin_settings").select("value").eq("key", "fixed_monthly_costs").maybeSingle(),
+    supabaseAdmin.from("revenue_events").select("status, amount, fee_estimate, created_at"),
   ]);
 
   const allProfiles = profiles || [];
@@ -51,6 +90,7 @@ export default async function handler(req, res) {
   const allUsage = dailyUsage || [];
   const allSubscriptions = subscriptions || [];
   const fixedCosts = settingsRow?.value || { vercel: 0, supabase: 0, other: 0 };
+  const paidRevenueEvents = (revenueEvents || []).filter((r) => r.status === "paid");
 
   // Tier breakdown
   const tierBreakdown = { free: 0, premium: 0, pro: 0 };
@@ -163,6 +203,38 @@ export default async function handler(req, res) {
   const fixedCostsTotal = (fixedCosts.vercel || 0) + (fixedCosts.supabase || 0) + (fixedCosts.other || 0);
   const trueNetProfit = netProfit - fixedCostsTotal;
 
+  // Growth charts: new users, usage and revenue bucketed into daily/weekly/
+  // monthly/yearly series so the admin dashboard can show trends over time,
+  // not just today's snapshot.
+  const growth = { newUsers: {}, usage: {}, revenue: {} };
+  for (const [granularity, count] of GROWTH_GRANULARITIES) {
+    const periods = periodBoundaries(now, granularity, count);
+    growth.newUsers[granularity] = bucketCount(allProfiles, "created_at", periods);
+    growth.usage[granularity] = bucketCount(allLogs, "created_at", periods);
+    growth.revenue[granularity] = periods.map(({ start, end, label }) => {
+      const eventsInRange = paidRevenueEvents.filter((r) => {
+        const d = new Date(r.created_at);
+        return d >= start && d < end;
+      });
+      const gross = eventsInRange.reduce((s, r) => s + Number(r.amount || 0), 0);
+      const fees = eventsInRange.reduce((s, r) => s + Number(r.fee_estimate || 0), 0);
+      const usageInRange = allLogs.filter((l) => {
+        const d = new Date(l.created_at);
+        return d >= start && d < end;
+      }).length;
+      const periodDays = Math.max((end - start) / (24 * 60 * 60 * 1000), 1);
+      const fixedCostProrated = fixedCostsTotal * (periodDays / 30);
+      const net = gross - fees;
+      const trueNet = net - usageInRange * GEMINI_COST_PER_GEN - fixedCostProrated;
+      return {
+        label,
+        gross: parseFloat(gross.toFixed(2)),
+        net: parseFloat(net.toFixed(2)),
+        trueNet: parseFloat(trueNet.toFixed(2)),
+      };
+    });
+  }
+
   return res.status(200).json({
     success: true,
     data: {
@@ -205,6 +277,10 @@ export default async function handler(req, res) {
         fixedCostsTotal: parseFloat(fixedCostsTotal.toFixed(2)),
         trueNet: parseFloat(trueNetProfit.toFixed(2)),
       },
+      growth,
+      revenueTrackingSince: paidRevenueEvents.length
+        ? paidRevenueEvents.reduce((min, r) => (r.created_at < min ? r.created_at : min), paidRevenueEvents[0].created_at)
+        : null,
       messageCount: messageCount || 0,
     },
   });

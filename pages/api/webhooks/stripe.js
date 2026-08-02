@@ -6,6 +6,15 @@ export const config = {
   api: { bodyParser: false },
 };
 
+const STRIPE_FEE_PCT = 0.029;
+const STRIPE_FEE_FIXED = 0.30;
+
+function tierForPrice(priceId) {
+  if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
+  if (priceId === process.env.STRIPE_PRICE_PREMIUM) return "premium";
+  return "free";
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, error: "Method not allowed" });
@@ -36,12 +45,7 @@ export default async function handler(req, res) {
         // Retrieve full subscription to get the price/plan
         const sub = await stripe.subscriptions.retrieve(subscriptionId);
         const priceId = sub.items.data[0]?.price?.id;
-        const tier =
-          priceId === process.env.STRIPE_PRICE_PRO
-            ? "pro"
-            : priceId === process.env.STRIPE_PRICE_PREMIUM
-            ? "premium"
-            : "free";
+        const tier = tierForPrice(priceId);
 
         // Upsert subscription record
         await supabaseAdmin.from("subscriptions").upsert({
@@ -73,12 +77,7 @@ export default async function handler(req, res) {
       const subscription = event.data.object;
       if (supabaseAdmin) {
         const priceId = subscription.items?.data[0]?.price?.id;
-        const tier =
-          priceId === process.env.STRIPE_PRICE_PRO
-            ? "pro"
-            : priceId === process.env.STRIPE_PRICE_PREMIUM
-            ? "premium"
-            : "free";
+        const tier = tierForPrice(priceId);
 
         await supabaseAdmin.from("subscriptions").upsert({
           stripe_subscription_id: subscription.id,
@@ -88,11 +87,65 @@ export default async function handler(req, res) {
           updated_at: new Date().toISOString(),
         }, { onConflict: "stripe_subscription_id" });
 
-        // Update profile tier by stripe_customer_id
+        // Update profile tier by stripe_customer_id. Tier stays the same while
+        // cancel_at_period_end is set (user keeps access until the period ends);
+        // only the status changes to reflect the pending cancellation.
         await supabaseAdmin.from("profiles").update({
-          subscription_tier: subscription.cancel_at_period_end ? tier : tier,
+          subscription_tier: tier,
           subscription_status: subscription.cancel_at_period_end ? "canceling" : subscription.status,
         }).eq("stripe_customer_id", subscription.customer);
+      }
+      break;
+    }
+
+    case "invoice.paid": {
+      const invoice = event.data.object;
+      if (supabaseAdmin) {
+        const priceId = invoice.lines?.data[0]?.price?.id;
+        const tier = tierForPrice(priceId);
+        const amount = (invoice.amount_paid || 0) / 100;
+        const feeEstimate = amount > 0 ? amount * STRIPE_FEE_PCT + STRIPE_FEE_FIXED : 0;
+
+        let userId = null;
+        if (invoice.customer) {
+          const { data: profile } = await supabaseAdmin
+            .from("profiles")
+            .select("id")
+            .eq("stripe_customer_id", invoice.customer)
+            .maybeSingle();
+          userId = profile?.id || null;
+        }
+
+        await supabaseAdmin.from("revenue_events").upsert({
+          stripe_event_id: event.id,
+          user_id: userId,
+          stripe_customer_id: invoice.customer,
+          email: invoice.customer_email,
+          tier,
+          status: "paid",
+          amount,
+          fee_estimate: feeEstimate,
+        }, { onConflict: "stripe_event_id" });
+      }
+      break;
+    }
+
+    case "invoice.payment_failed": {
+      const invoice = event.data.object;
+      if (supabaseAdmin) {
+        await supabaseAdmin.from("revenue_events").upsert({
+          stripe_event_id: event.id,
+          stripe_customer_id: invoice.customer,
+          email: invoice.customer_email,
+          status: "failed",
+          amount: (invoice.amount_due || 0) / 100,
+        }, { onConflict: "stripe_event_id" });
+
+        if (invoice.customer) {
+          await supabaseAdmin.from("profiles")
+            .update({ subscription_status: "past_due" })
+            .eq("stripe_customer_id", invoice.customer);
+        }
       }
       break;
     }

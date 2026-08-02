@@ -126,6 +126,27 @@ create table if not exists admin_settings (
   updated_at timestamp default current_timestamp
 );
 
+-- Revenue ledger: one row per successful/failed Stripe invoice payment.
+-- Populated by the Stripe webhook (invoice.paid / invoice.payment_failed) so
+-- the admin dashboard can chart real revenue history over time instead of
+-- only ever showing today's snapshot (current tier counts x price).
+create table if not exists revenue_events (
+  id bigserial primary key,
+  stripe_event_id text unique, -- idempotency: Stripe may redeliver the same webhook event
+  user_id uuid references auth.users(id) on delete set null,
+  stripe_customer_id text,
+  email text,
+  tier text, -- 'premium' | 'pro'
+  status text not null, -- 'paid' | 'failed'
+  amount numeric(10,2) not null default 0, -- gross amount in dollars
+  fee_estimate numeric(10,2) not null default 0, -- estimated Stripe processing fee
+  created_at timestamp default current_timestamp
+);
+
+create index if not exists idx_revenue_events_created on revenue_events(created_at);
+alter table revenue_events enable row level security;
+-- No public policy: only the backend (service_role key) reads/writes this table.
+
 -- Row Level Security: our backend talks to these tables via the service_role key
 -- (which always bypasses RLS), but this locks them down for any future client-side
 -- access using the publishable/anon key - users can only see their own rows.
