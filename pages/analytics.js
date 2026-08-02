@@ -36,6 +36,7 @@ export default function Analytics() {
   useEffect(() => {
     if (!user || !supabase) return;
     (async () => {
+      setError("");
       const { data: { session } } = await supabase.auth.getSession();
       const r = await fetch("/api/user/analytics", {
         headers: { Authorization: `Bearer ${session?.access_token}` },
@@ -44,7 +45,7 @@ export default function Analytics() {
       if (d.success) setData(d.data);
       else setError(d.error);
     })();
-  }, [user]);
+  }, [user?.id]);
 
   if (loading || !user) return null;
 

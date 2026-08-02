@@ -53,6 +53,7 @@ export default function Calendar() {
   }, [loading, user, router]);
 
   async function loadEntries() {
+    setError("");
     const { data: { session } } = await supabase.auth.getSession();
     const r = await fetch("/api/user/calendar", {
       headers: { Authorization: `Bearer ${session?.access_token}` },
@@ -65,7 +66,7 @@ export default function Calendar() {
   useEffect(() => {
     if (!user || !supabase) return;
     loadEntries();
-  }, [user]);
+  }, [user?.id]);
 
   async function handleAdd() {
     if (!note.trim() || !selectedDate) return;

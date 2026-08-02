@@ -37,6 +37,7 @@ export default function Saved() {
   useEffect(() => {
     if (!user || !supabase) return;
     (async () => {
+      setError("");
       const { data: { session } } = await supabase.auth.getSession();
       const r = await fetch("/api/user/saved", {
         headers: { Authorization: `Bearer ${session?.access_token}` },
@@ -45,7 +46,7 @@ export default function Saved() {
       if (d.success) setItems(d.data);
       else setError(d.error);
     })();
-  }, [user]);
+  }, [user?.id]);
 
   async function handleDelete(id) {
     const { data: { session } } = await supabase.auth.getSession();

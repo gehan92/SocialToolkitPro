@@ -181,7 +181,7 @@ export default function Account() {
     supabase.from("daily_usage").select("generations_count")
       .eq("user_id", user.id).eq("usage_date", today).maybeSingle()
       .then(({ data }) => setUsageToday(data?.generations_count ?? 0));
-  }, [user]);
+  }, [user?.id]);
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });

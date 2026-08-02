@@ -116,6 +116,7 @@ export default function Admin() {
 
   async function loadAll() {
     if (!supabase) return;
+    setError("");
     const { data: { session } } = await supabase.auth.getSession();
     const headers = { Authorization: `Bearer ${session?.access_token}` };
     const [statsRes, usersRes, messagesRes, subsRes] = await Promise.all([
@@ -134,7 +135,7 @@ export default function Admin() {
     setCostsForm({ vercel: String(fc.vercel || ""), supabase: String(fc.supabase || ""), other: String(fc.other || "") });
   }
 
-  useEffect(() => { if (user) loadAll(); }, [user]);
+  useEffect(() => { if (user) loadAll(); }, [user?.id]);
 
   async function changeTier(userId, tier) {
     setSavingTier(userId);
