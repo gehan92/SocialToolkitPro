@@ -5,6 +5,43 @@
 
 ---
 
+## 🧭 Clear Direction — What To Do, In Order
+
+This is the short version of everything below, as a decision-ready roadmap. Nothing in here is built yet — these are the steps, in priority order.
+
+### Phase 1: Survival (do this first — before anything else matters)
+1. **Enable Gemini billing** (Google AI Studio / Cloud console). Right now the whole app shares a 20-request/day free bucket. Until this is on, the app can break for everyone at any moment. Not optional — everything else depends on this.
+2. **Set a Google Cloud budget alert** (e.g. email at $20/day spent). Protects against a bug or bot silently running up a bill.
+3. **Two API keys** — one for development/testing, one for the live site. Keeps dev testing from ever eating a real customer's quota again (this is exactly what happened to us during testing).
+
+Once these 3 are done, the app can no longer randomly stop working for customers. Everything after this is about making it *profitable and safe*, not about keeping it alive.
+
+### Phase 2: Protect the profit (the business decision — needs owner judgment, not just code)
+Premium and Pro are currently truly unlimited — no ceiling at all. That's a business risk:
+- A paying customer could generate thousands of times and cost more in AI fees than they pay.
+- One such customer can burn the whole shared AI quota and break the tool for every other customer too.
+
+**Decision needed:** a quiet "fair use" daily ceiling — customers still see "unlimited" in marketing, but a generous cap sits behind the scenes (e.g. Premium ~200-300/day, Pro ~500-1000/day) that a normal user never notices, but an extreme outlier hits. This is standard practice for AI SaaS products — nobody actually gives infinite usage.
+
+**Before finalizing numbers:** once Gemini billing is on, check Google's real per-token price and calculate:
+```
+Profit per generation = (subscription price ÷ typical monthly generations) − (real Gemini cost per generation)
+```
+This confirms whether $9/$29 pricing is actually healthy, or too thin, now that token budgets were raised.
+
+### Phase 3: Reliability polish (when convenient, not urgent)
+4. **Auto-retry** once or twice on a Gemini hiccup before showing the customer an error — most transient failures quietly succeed on retry.
+5. **Usage warning banner** in the admin dashboard when daily generations cross ~80% of a plan's real limit — see problems coming instead of finding out from an angry customer.
+
+### Phase 4: Later, only if it becomes a real problem
+6. A backup AI provider as fallback, only if Google has a real outage (not a brief hiccup). Real added cost/complexity — not worth building speculatively.
+
+**Summary:** Turn on billing → protect the bill with an alert → separate dev/prod keys → decide the fair-use cap numbers and confirm real profit margin → then polish reliability (retry + usage banner) → backup provider only if it later becomes a real problem.
+
+Items 1-3 happen in the Google Cloud console (owner action, not code). Everything else waits for explicit go-ahead before any code is written.
+
+---
+
 ## 🚨 The Big One: Gemini API Free-Tier Quota
 
 While testing a bug fix, we hit this live:
