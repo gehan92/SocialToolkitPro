@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   const user = await getAuthUser(req);
 
   if (variations) {
-    const tier = user ? await getUserTier(user.id) : "free";
+    const tier = user ? await getUserTier(user.id, user.email) : "free";
     if (tier === "free") {
       return res.status(403).json({ success: false, error: "Variations is a Premium feature. Upgrade to generate multiple versions at once." });
     }

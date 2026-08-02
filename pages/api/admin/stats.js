@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
 import { getAuthUser } from "../../../lib/getAuthUser";
 import { isAdminEmail } from "../../../lib/isAdmin";
+import { getPlanConfig } from "../../../lib/planConfig";
 
 const TOOL_LABELS = {
   hashtags: "Hashtag Generator", captions: "Caption Writer", bios: "Bio Maker",
@@ -11,8 +12,6 @@ const TOOL_LABELS = {
   "tech-writing": "Technical Writing", pitch: "Brand Pitch Writer",
 };
 
-const PREMIUM_PRICE = 9;
-const PRO_PRICE = 29;
 const STRIPE_FEE_PCT = 0.029;
 const STRIPE_FEE_FIXED = 0.30;
 const GEMINI_COST_PER_GEN = 0.001;
@@ -91,6 +90,9 @@ export default async function handler(req, res) {
   const allSubscriptions = subscriptions || [];
   const fixedCosts = settingsRow?.value || { vercel: 0, supabase: 0, other: 0 };
   const paidRevenueEvents = (revenueEvents || []).filter((r) => r.status === "paid");
+  const planConfig = await getPlanConfig();
+  const PREMIUM_PRICE = planConfig.premiumPrice;
+  const PRO_PRICE = planConfig.proPrice;
 
   // Tier breakdown
   const tierBreakdown = { free: 0, premium: 0, pro: 0 };
@@ -278,6 +280,7 @@ export default async function handler(req, res) {
         trueNet: parseFloat(trueNetProfit.toFixed(2)),
       },
       growth,
+      planConfig,
       revenueTrackingSince: paidRevenueEvents.length
         ? paidRevenueEvents.reduce((min, r) => (r.created_at < min ? r.created_at : min), paidRevenueEvents[0].created_at)
         : null,

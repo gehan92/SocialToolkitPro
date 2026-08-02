@@ -100,7 +100,7 @@ const CSS = `
 .growth-total{color:var(--text3);font-weight:500;font-size:12px}
 `;
 
-const TABS = ["Overview", "Revenue", "Growth", "Payments", "Users", "Analytics", "Messages"];
+const TABS = ["Overview", "Revenue", "Plans", "Growth", "Payments", "Users", "Analytics", "Messages"];
 const GROWTH_PERIODS = ["daily", "weekly", "monthly", "yearly"];
 
 export default function Admin() {
@@ -117,6 +117,8 @@ export default function Admin() {
   const [costsForm, setCostsForm] = useState({ vercel: "", supabase: "", other: "" });
   const [savingCosts, setSavingCosts] = useState(false);
   const [growthPeriod, setGrowthPeriod] = useState("weekly");
+  const [planForm, setPlanForm] = useState({ premiumPrice: "", proPrice: "", freeDailyLimit: "" });
+  const [savingPlan, setSavingPlan] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -141,6 +143,8 @@ export default function Admin() {
     setSubSummary(subsRes.summary || null);
     const fc = statsRes.data?.revenue?.fixedCosts || { vercel: 0, supabase: 0, other: 0 };
     setCostsForm({ vercel: String(fc.vercel || ""), supabase: String(fc.supabase || ""), other: String(fc.other || "") });
+    const pc = statsRes.data?.planConfig || { premiumPrice: 9, proPrice: 29, freeDailyLimit: 10 };
+    setPlanForm({ premiumPrice: String(pc.premiumPrice), proPrice: String(pc.proPrice), freeDailyLimit: String(pc.freeDailyLimit) });
   }
 
   useEffect(() => { if (user) loadAll(); }, [user?.id]);
@@ -173,6 +177,20 @@ export default function Admin() {
     loadAll();
   }
 
+  async function savePlanConfig() {
+    setSavingPlan(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const r = await fetch("/api/admin/settings?key=plan_config", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(planForm),
+    });
+    const d = await r.json();
+    setSavingPlan(false);
+    if (!d.success) { alert(d.error); return; }
+    loadAll();
+  }
+
   async function deleteMessage(id) {
     if (!confirm("Delete this message?")) return;
     const { data: { session } } = await supabase.auth.getSession();
@@ -193,6 +211,7 @@ export default function Admin() {
   }
 
   const rev = stats?.revenue || {};
+  const plan = stats?.planConfig || { premiumPrice: 9, proPrice: 29, freeDailyLimit: 10 };
   const margin = rev.gross > 0 ? Math.round((rev.net / rev.gross) * 100) : 0;
   const maxBar = stats?.last30Days ? Math.max(...stats.last30Days.map((d) => d.count), 1) : 1;
   const topTools = stats?.toolCounts
@@ -268,12 +287,12 @@ export default function Admin() {
                   <div className="ad-card">
                     <div className="ad-num" style={{ color: "#a097ff" }}>{stats.tierBreakdown.premium}</div>
                     <div className="ad-label">Premium users</div>
-                    <div className="ad-trend up">${(stats.tierBreakdown.premium * 9).toLocaleString()}/mo</div>
+                    <div className="ad-trend up">${(stats.tierBreakdown.premium * plan.premiumPrice).toLocaleString()}/mo</div>
                   </div>
                   <div className="ad-card">
                     <div className="ad-num" style={{ color: "var(--a4)" }}>{stats.tierBreakdown.pro}</div>
                     <div className="ad-label">Pro users</div>
-                    <div className="ad-trend up">${(stats.tierBreakdown.pro * 29).toLocaleString()}/mo</div>
+                    <div className="ad-trend up">${(stats.tierBreakdown.pro * plan.proPrice).toLocaleString()}/mo</div>
                   </div>
                   <div className="ad-card">
                     <div className="ad-num" style={{ color: "var(--a3)" }}>${rev.net?.toFixed(0) || "0"}</div>
@@ -421,16 +440,16 @@ export default function Admin() {
                       <tr>
                         <td><span className="tier-pill premium">Premium</span></td>
                         <td>{stats.tierBreakdown.premium}</td>
-                        <td>$9/mo</td>
+                        <td>${plan.premiumPrice}/mo</td>
                         <td>${rev.premium?.toFixed(2) || "0.00"}</td>
-                        <td>${(stats.tierBreakdown.premium * (9 - (9 * 0.029 + 0.30))).toFixed(2)}</td>
+                        <td>${(stats.tierBreakdown.premium * (plan.premiumPrice - (plan.premiumPrice * 0.029 + 0.30))).toFixed(2)}</td>
                       </tr>
                       <tr>
                         <td><span className="tier-pill pro">Pro</span></td>
                         <td>{stats.tierBreakdown.pro}</td>
-                        <td>$29/mo</td>
+                        <td>${plan.proPrice}/mo</td>
                         <td>${rev.pro?.toFixed(2) || "0.00"}</td>
-                        <td>${(stats.tierBreakdown.pro * (29 - (29 * 0.029 + 0.30))).toFixed(2)}</td>
+                        <td>${(stats.tierBreakdown.pro * (plan.proPrice - (plan.proPrice * 0.029 + 0.30))).toFixed(2)}</td>
                       </tr>
                       <tr style={{ fontWeight: 700 }}>
                         <td>Total</td>
@@ -455,8 +474,8 @@ export default function Admin() {
                         { paid: 500, p: 375, pro: 125 },
                         { paid: 1000, p: 750, pro: 250 },
                       ].map(({ paid, p, pro }) => {
-                        const g = p * 9 + pro * 29;
-                        const fees = (p * (9 * 0.029 + 0.30)) + (pro * (29 * 0.029 + 0.30));
+                        const g = p * plan.premiumPrice + pro * plan.proPrice;
+                        const fees = (p * (plan.premiumPrice * 0.029 + 0.30)) + (pro * (plan.proPrice * 0.029 + 0.30));
                         const ai = paid * 50 * 0.001;
                         return (
                           <tr key={paid}>
@@ -467,6 +486,80 @@ export default function Admin() {
                           </tr>
                         );
                       })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
+            {/* ── PLANS TAB ── */}
+            {activeTab === "Plans" && (
+              <>
+                <div className="ad-section-label">Plan pricing &amp; limits</div>
+                <div className="ad-section">
+                  <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 16 }}>
+                    These values drive the revenue/profit math and the free-tier daily generation cap across the app.
+                    They do <strong>not</strong> change what Stripe actually charges — updating the Premium/Pro price here
+                    is for internal reporting only. To change real billing, create a new Price in Stripe and update the
+                    <code style={{ margin: "0 4px" }}>STRIPE_PRICE_PREMIUM</code> / <code style={{ margin: "0 4px" }}>STRIPE_PRICE_PRO</code> env vars.
+                  </p>
+                  <div className="settings-grid">
+                    <div className="settings-field">
+                      <label>Premium price ($/mo)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.premiumPrice}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, premiumPrice: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Pro price ($/mo)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.proPrice}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, proPrice: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Free daily generation limit</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.freeDailyLimit}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, freeDailyLimit: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <button className="settings-save-btn" disabled={savingPlan} onClick={savePlanConfig}>
+                    {savingPlan ? "Saving..." : "Save plan settings"}
+                  </button>
+                </div>
+
+                <div className="ad-section-label">Current plans</div>
+                <div className="ad-section" style={{ padding: 0, overflow: "hidden" }}>
+                  <table className="ad-table">
+                    <thead><tr><th style={{ paddingLeft: 20 }}>Plan</th><th>Price</th><th>Subscribers</th><th>Daily generation limit</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td style={{ paddingLeft: 20 }}><span className="tier-pill free">Free</span></td>
+                        <td>$0/mo</td>
+                        <td>{stats.tierBreakdown.free}</td>
+                        <td>{plan.freeDailyLimit}/day</td>
+                      </tr>
+                      <tr>
+                        <td style={{ paddingLeft: 20 }}><span className="tier-pill premium">Premium</span></td>
+                        <td>${plan.premiumPrice}/mo</td>
+                        <td>{stats.tierBreakdown.premium}</td>
+                        <td>Unlimited</td>
+                      </tr>
+                      <tr>
+                        <td style={{ paddingLeft: 20 }}><span className="tier-pill pro">Pro</span></td>
+                        <td>${plan.proPrice}/mo</td>
+                        <td>{stats.tierBreakdown.pro}</td>
+                        <td>Unlimited</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>

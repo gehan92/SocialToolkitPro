@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ success: false, error: "Please log in to view analytics." });
   }
 
-  const tier = await getUserTier(user.id);
+  const tier = await getUserTier(user.id, user.email);
   if (tier === "free") {
     return res.status(403).json({ success: false, error: "Analytics is a Premium feature. Upgrade to see your usage stats." });
   }

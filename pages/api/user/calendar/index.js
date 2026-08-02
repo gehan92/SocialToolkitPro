@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const tier = await getUserTier(user.id);
+    const tier = await getUserTier(user.id, user.email);
     if (tier === "free") {
       return res.status(403).json({ success: false, error: "The content calendar is a Premium feature. Upgrade to plan your posts." });
     }

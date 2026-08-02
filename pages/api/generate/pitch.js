@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   const user = await getAuthUser(req);
-  const tier = user ? await getUserTier(user.id) : "free";
+  const tier = user ? await getUserTier(user.id, user.email) : "free";
   if (tier !== "pro") {
     return res.status(403).json({ success: false, error: "Pitch Writer is a Pro feature. Upgrade to Pro to unlock it." });
   }
