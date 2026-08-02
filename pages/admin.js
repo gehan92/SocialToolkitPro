@@ -177,7 +177,7 @@ export default function Admin() {
   if (error) {
     return (
       <>
-        <Head><title>Admin — SocialToolkit</title><link rel="stylesheet" href="/css/site.css" /><style dangerouslySetInnerHTML={{ __html: CSS }} /></Head>
+        <Head><title>Admin — SocialToolkit</title><style dangerouslySetInnerHTML={{ __html: CSS }} /></Head>
         <SiteNav />
         <div className="ad-wrap"><div className="ad-denied"><p style={{ fontSize: 18, marginBottom: 8 }}>🔒 Access Denied</p><p>{error}</p></div></div>
       </>
@@ -197,7 +197,6 @@ export default function Admin() {
       <Head>
         <title>Admin — SocialToolkit</title>
         <meta name="robots" content="noindex, nofollow" />
-        <link rel="stylesheet" href="/css/site.css" />
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
       </Head>
       <SiteNav />

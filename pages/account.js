@@ -274,7 +274,6 @@ export default function Account() {
     <>
       <Head>
         <title>My Account — SocialToolkit</title>
-        <link rel="stylesheet" href="/css/site.css" />
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
       </Head>
       <SiteNav />

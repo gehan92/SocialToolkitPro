@@ -55,7 +55,6 @@ export default function Analytics() {
     <>
       <Head>
         <title>Analytics — SocialToolkit</title>
-        <link rel="stylesheet" href="/css/site.css" />
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
       </Head>
       <SiteNav />
@@ -69,6 +68,8 @@ export default function Analytics() {
             <p>{error}</p>
           </div>
         )}
+
+        {!data && !error && <p style={{ color: "var(--text3)", fontSize: 14 }}>Loading...</p>}
 
         {data && (
           <>

@@ -64,7 +64,6 @@ export default function Saved() {
     <>
       <Head>
         <title>Saved Outputs — SocialToolkit</title>
-        <link rel="stylesheet" href="/css/site.css" />
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
       </Head>
       <SiteNav />
@@ -78,6 +77,8 @@ export default function Saved() {
             <p>{error}</p>
           </div>
         )}
+
+        {!items && !error && <p style={{ color: "var(--text3)", fontSize: 14 }}>Loading...</p>}
 
         {items && items.length === 0 && !error && (
           <div className="saved-empty">Nothing saved yet. Click "❤️ Save" on any generated result to keep it here.</div>

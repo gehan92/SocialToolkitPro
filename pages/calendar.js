@@ -109,7 +109,6 @@ export default function Calendar() {
     <>
       <Head>
         <title>Content Calendar — SocialToolkit</title>
-        <link rel="stylesheet" href="/css/site.css" />
         <style dangerouslySetInnerHTML={{ __html: CSS }} />
       </Head>
       <SiteNav />
@@ -123,6 +122,8 @@ export default function Calendar() {
             <p>{error}</p>
           </div>
         )}
+
+        {!entries && !error && <p style={{ color: "var(--text3)", fontSize: 14 }}>Loading...</p>}
 
         {entries && (
           <>

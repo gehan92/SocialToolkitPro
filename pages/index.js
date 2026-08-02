@@ -33,7 +33,6 @@ export default function Home() {
           content="Free AI tools for content creators. Hashtag generator, caption writer, bio maker & video idea generator. No sign up needed!"
         />
         <link rel="canonical" href="https://www.socialtoolkitpro.com/" />
-        <link rel="stylesheet" href="/css/site.css" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

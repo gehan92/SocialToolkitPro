@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuthUser } from "../lib/useAuthUser";
 import { supabase } from "../lib/supabaseClient";
 
@@ -21,7 +22,7 @@ export default function SiteNav() {
         window.__stUserTier = data?.subscription_tier || "free";
         setUsername(data?.username || "");
       });
-  }, [user]);
+  }, [user?.id]);
 
   async function handleLogout() {
     if (supabase) await supabase.auth.signOut();
@@ -31,7 +32,7 @@ export default function SiteNav() {
   return (
     <nav>
       <div className="nav-wrap">
-        <a className="logo" href="/">
+        <Link className="logo" href="/">
           <div className="logo-mark">
             <svg width="36" height="36" viewBox="0 0 36 36" role="img" aria-label="SocialToolkit logo">
               <rect width="36" height="36" rx="9" fill="#0e0e16" />
@@ -45,32 +46,32 @@ export default function SiteNav() {
             </svg>
           </div>
           SocialToolkit
-        </a>
+        </Link>
         <div className="nav-right">
-          <a className="nav-link" href="/#how">How it works</a>
-          <a className="nav-link" href="/#tools">Tools</a>
-          <a className="nav-link" href="/#faq">FAQ</a>
+          <Link className="nav-link" href="/#how">How it works</Link>
+          <Link className="nav-link" href="/#tools">Tools</Link>
+          <Link className="nav-link" href="/#faq">FAQ</Link>
           {loading ? null : user ? (
             <>
-              <a className="nav-link" href="/saved">Saved</a>
-              <a className="nav-link" href="/calendar">Calendar</a>
-              <a className="nav-link" href="/analytics">Analytics</a>
-              <a
+              <Link className="nav-link" href="/saved">Saved</Link>
+              <Link className="nav-link" href="/calendar">Calendar</Link>
+              <Link className="nav-link" href="/analytics">Analytics</Link>
+              <Link
                 className="nav-link"
                 href="/account"
                 title={user.email}
                 style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
               >
                 {username || user.email}
-              </a>
+              </Link>
               <button className="nav-cta" onClick={handleLogout} style={{ border: "none", cursor: "pointer" }}>
                 Log out
               </button>
             </>
           ) : (
             <>
-              <a className="nav-link" href="/login">Log in</a>
-              <a className="nav-cta" href="/signup">Sign up free →</a>
+              <Link className="nav-link" href="/login">Log in</Link>
+              <Link className="nav-cta" href="/signup">Sign up free →</Link>
             </>
           )}
         </div>
