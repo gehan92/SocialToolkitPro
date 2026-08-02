@@ -4,40 +4,49 @@ export default function Terms() {
   return (
     <LegalLayout
       title="Terms of Use — SocialToolkit"
-      description="Terms of Use for SocialToolkit — rules and conditions for using our free AI tools."
+      description="Terms of Use for SocialToolkit — rules and conditions for using our AI content tools and paid plans."
       pageTag="Legal"
-      updated="January 1, 2026"
+      updated="August 2, 2026"
     >
       <div className="highlight">
         <p>Please read these Terms of Use carefully before using SocialToolkit. By accessing or using our website, you agree to be bound by these terms. If you do not agree, please do not use our website.</p>
       </div>
 
       <h2>1. Acceptance of terms</h2>
-      <p>By using SocialToolkit (&quot;the website&quot;, &quot;our service&quot;), you confirm that you are at least 13 years of age and agree to these Terms of Use and our <a href="/privacy">Privacy Policy</a>. These terms apply to all visitors and users of the website.</p>
+      <p>By using SocialToolkit (&quot;the website&quot;, &quot;our service&quot;), you confirm that you are at least 13 years of age and agree to these Terms of Use and our <a href="/privacy">Privacy Policy</a>. These terms apply to all visitors and users of the website, whether on a Free, Premium, or Pro plan.</p>
 
       <h2>2. Description of service</h2>
-      <p>SocialToolkit provides free AI-powered tools for content creators, including:</p>
-      <ul>
-        <li>Hashtag Generator — generates relevant hashtags for social media posts</li>
-        <li>Caption Writer — creates captions for social media content</li>
-        <li>Bio Maker — generates profile bios for social media platforms</li>
-        <li>Video Idea Generator — suggests content ideas for video creators</li>
-      </ul>
-      <p>These tools are provided free of charge and are supported by advertising.</p>
+      <p>SocialToolkit provides AI-powered tools for content creators, including hashtag generation, caption writing, bio creation, video ideas, thread writing, blog intros, content repurposing, and other writing tools. Some tools and features are available on our Free plan; others require a paid Premium or Pro subscription, as described on our <a href="/account">pricing page</a>.</p>
 
-      <h2>3. Acceptable use</h2>
+      <h2>3. Accounts</h2>
+      <p>To save content, use the calendar or templates, or subscribe to a paid plan, you must create an account with a valid email address. You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account. You must provide accurate information and may not create an account using an email address you do not control.</p>
+
+      <h2>4. Subscriptions &amp; billing</h2>
+      <ul>
+        <li>Premium and Pro are paid monthly subscriptions, billed automatically until cancelled. Current pricing is shown on our <a href="/account">pricing page</a> and may change from time to time; we will make reasonable efforts to notify existing subscribers of price changes before they take effect.</li>
+        <li>Payments are processed by Stripe. By subscribing, you authorize us (via Stripe) to charge your payment method on a recurring basis.</li>
+        <li>You may cancel your subscription at any time from your account page. Cancellation takes effect at the end of your current billing period — you retain access to paid features until then, and you will not be charged again after cancelling.</li>
+        <li>Except where required by law, payments are non-refundable, including for partial billing periods.</li>
+        <li>We may suspend or downgrade your account if a payment fails and is not resolved within a reasonable time.</li>
+      </ul>
+
+      <h2>5. Free plan limits</h2>
+      <p>The Free plan includes a limited number of generations per day, and access to a subset of tools. We may change these limits at any time. Attempting to circumvent usage limits (e.g. via multiple accounts or automated requests) is prohibited under Section 6.</p>
+
+      <h2>6. Acceptable use</h2>
       <p>You agree to use SocialToolkit only for lawful purposes. You must not use our service to:</p>
       <ul>
         <li>Generate content that is illegal, harmful, threatening, abusive, or offensive</li>
-        <li>Generate spam, misleading content, or content that violates platform terms of service</li>
-        <li>Attempt to interfere with or disrupt our website or servers</li>
-        <li>Use automated tools to make excessive requests to our service</li>
-        <li>Collect or harvest any information from our website without permission</li>
-        <li>Impersonate any person or entity</li>
+        <li>Generate spam, misleading content, or content that violates a social platform&apos;s terms of service</li>
+        <li>Attempt to interfere with or disrupt our website, servers, or rate limits</li>
+        <li>Use automated tools or multiple accounts to circumvent usage limits or make excessive requests</li>
+        <li>Collect or harvest information from our website without permission</li>
+        <li>Impersonate any person or entity, or misuse another person&apos;s account</li>
       </ul>
+      <p>We may suspend or terminate accounts that violate these terms.</p>
 
-      <h2>4. AI-generated content</h2>
-      <p>Our tools use artificial intelligence to generate content suggestions. You acknowledge that:</p>
+      <h2>7. AI-generated content</h2>
+      <p>Our tools use artificial intelligence (Google Gemini) to generate content suggestions. You acknowledge that:</p>
       <ul>
         <li>AI-generated content may not always be accurate, appropriate, or suitable for your needs</li>
         <li>You are solely responsible for reviewing and using any content generated by our tools</li>
@@ -45,14 +54,17 @@ export default function Terms() {
         <li>You retain full responsibility for any content you publish using suggestions from our tools</li>
       </ul>
 
-      <h2>5. Intellectual property</h2>
+      <h2>8. Intellectual property</h2>
       <p>The SocialToolkit website, including its design, logo, code, and content, is owned by SocialToolkit and protected by intellectual property laws. You may not copy, reproduce, or distribute our website content without permission.</p>
-      <p>Content generated by our AI tools based on your input is provided for your personal use. We do not claim ownership of content you generate using our tools.</p>
+      <p>We do not claim ownership of content generated for you based on your input, and you may use it for your own purposes, subject to Section 7 above.</p>
 
-      <h2>6. Advertising</h2>
-      <p>Our website displays advertisements through Google AdSense. These ads are provided by Google and its advertising partners. We are not responsible for the content of advertisements displayed on our site. By using our website, you consent to the display of advertisements.</p>
+      <h2>9. Termination</h2>
+      <p>You may stop using the service and cancel your subscription at any time. We may suspend or terminate your account if you violate these terms, engage in fraudulent or abusive behavior, or if required by law. Sections of these terms that by their nature should survive termination (e.g. intellectual property, disclaimers, limitation of liability) will continue to apply.</p>
 
-      <h2>7. Disclaimer of warranties</h2>
+      <h2>10. Advertising</h2>
+      <p>Our website may display advertisements through Google AdSense. We are not responsible for the content of advertisements displayed on our site. By using our website, you consent to the display of advertisements where enabled.</p>
+
+      <h2>11. Disclaimer of warranties</h2>
       <p>SocialToolkit is provided &quot;as is&quot; and &quot;as available&quot; without any warranties of any kind, either express or implied. We do not warrant that:</p>
       <ul>
         <li>The service will be uninterrupted, error-free, or available at all times</li>
@@ -60,22 +72,22 @@ export default function Terms() {
         <li>The service will meet your specific requirements or expectations</li>
       </ul>
 
-      <h2>8. Limitation of liability</h2>
-      <p>To the maximum extent permitted by law, SocialToolkit and its operators shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or the content generated by our tools. Our total liability shall not exceed the amount you paid to use our service (which is zero, as our service is free).</p>
+      <h2>12. Limitation of liability</h2>
+      <p>To the maximum extent permitted by law, SocialToolkit and its operators shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or the content generated by our tools. Our total liability to you for any claim relating to the service shall not exceed the amount you paid us in the 12 months before the claim arose.</p>
 
-      <h2>9. Third-party links and services</h2>
-      <p>Our website may contain links to third-party websites. We are not responsible for the content, privacy practices, or terms of those websites. Links do not constitute endorsement of those sites.</p>
+      <h2>13. Third-party links and services</h2>
+      <p>Our website may contain links to third-party websites, and relies on third-party services (Stripe, Supabase, Google) described in our <a href="/privacy">Privacy Policy</a>. We are not responsible for the content, privacy practices, or terms of those third parties.</p>
 
-      <h2>10. Changes to the service</h2>
-      <p>We reserve the right to modify, suspend, or discontinue any part of our service at any time without notice. We are not liable to you or any third party for any modification, suspension, or discontinuation of the service.</p>
+      <h2>14. Changes to the service</h2>
+      <p>We reserve the right to modify, suspend, or discontinue any part of the service, including specific tools or plan features, at any time. Where a change materially reduces the value of a paid plan, we will make reasonable efforts to notify subscribers in advance.</p>
 
-      <h2>11. Changes to these terms</h2>
-      <p>We may update these Terms of Use at any time. Changes will be effective when posted on this page with an updated date. Your continued use of our website after changes are posted means you accept the updated terms.</p>
+      <h2>15. Changes to these terms</h2>
+      <p>We may update these Terms of Use at any time. Changes will be effective when posted on this page with an updated date. Continued use of the service after changes are posted means you accept the updated terms.</p>
 
-      <h2>12. Governing law</h2>
-      <p>These Terms of Use are governed by and construed in accordance with applicable laws. Any disputes arising from these terms shall be resolved through good-faith negotiation.</p>
+      <h2>16. Governing law</h2>
+      <p>These Terms of Use are governed by the laws of [INSERT YOUR COUNTRY/STATE OF BUSINESS]. Any disputes arising from these terms shall first be attempted to be resolved through good-faith negotiation.</p>
 
-      <h2>13. Contact us</h2>
+      <h2>17. Contact us</h2>
       <p>If you have any questions about these Terms of Use, please contact us:</p>
       <ul>
         <li>Email: <a href="mailto:socialaikit@gmail.com">socialaikit@gmail.com</a></li>
