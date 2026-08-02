@@ -46,7 +46,7 @@ Rules:
   const user = await getAuthUser(req);
   const startedAt = Date.now();
   try {
-    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: 1500 });
+    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: 2500 });
     await logApiUsage({ userId: user?.id, endpoint: "/api/generate/thread", statusCode: 200, responseTimeMs: Date.now() - startedAt, tokensUsed });
     return res.status(200).json({ success: true, data: text.trim(), remaining: rl.remaining });
   } catch (e) {

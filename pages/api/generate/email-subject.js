@@ -45,7 +45,7 @@ Rules:
 
   const startedAt = Date.now();
   try {
-    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: 800 });
+    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: 2500 });
     await logApiUsage({ userId: user?.id, endpoint: "/api/generate/email-subject", statusCode: 200, responseTimeMs: Date.now() - startedAt, tokensUsed });
     return res.status(200).json({ success: true, data: text.trim(), remaining: rl.remaining });
   } catch (e) {

@@ -52,7 +52,7 @@ Rules:
 
   const startedAt = Date.now();
   try {
-    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: 800 });
+    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: 3000 });
     await logApiUsage({ userId: user?.id, endpoint: "/api/generate/viral-hook", statusCode: 200, responseTimeMs: Date.now() - startedAt, tokensUsed });
     return res.status(200).json({ success: true, data: text.trim(), remaining: rl.remaining });
   } catch (e) {

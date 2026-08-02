@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
   const startedAt = Date.now();
   try {
-    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: variations ? 2500 : 1000 });
+    const { text, tokensUsed } = await callGemini(prompt, { maxOutputTokens: variations ? 3000 : 2000 });
     await logApiUsage({ userId: user?.id, endpoint: "/api/generate/bios", statusCode: 200, responseTimeMs: Date.now() - startedAt, tokensUsed });
     return res.status(200).json({ success: true, data: text.trim(), remaining: rl.remaining });
   } catch (e) {
