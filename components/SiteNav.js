@@ -6,11 +6,13 @@ import { supabase } from "../lib/supabaseClient";
 export default function SiteNav() {
   const { user, loading } = useAuthUser();
   const [username, setUsername] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!user || !supabase) {
       if (typeof window !== "undefined") window.__stUserTier = "free";
       setUsername("");
+      setIsAdmin(false);
       return;
     }
     supabase
@@ -22,6 +24,13 @@ export default function SiteNav() {
         window.__stUserTier = data?.subscription_tier || "free";
         setUsername(data?.username || "");
       });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      fetch("/api/admin/whoami", { headers: { Authorization: `Bearer ${session?.access_token}` } })
+        .then((r) => r.json())
+        .then((d) => setIsAdmin(!!d.isAdmin))
+        .catch(() => setIsAdmin(false));
+    });
   }, [user?.id]);
 
   async function handleLogout() {
@@ -56,6 +65,7 @@ export default function SiteNav() {
               <Link className="nav-link" href="/saved">Saved</Link>
               <Link className="nav-link" href="/calendar">Calendar</Link>
               <Link className="nav-link" href="/analytics">Analytics</Link>
+              {isAdmin && <Link className="nav-link nav-link-admin" href="/admin">Admin</Link>}
               <Link
                 className="nav-link"
                 href="/account"

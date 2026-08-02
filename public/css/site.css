@@ -55,6 +55,8 @@ nav{
 .nav-right{display:flex;align-items:center;gap:6px}
 .nav-link{font-size:13px;font-weight:500;color:var(--text2);text-decoration:none;padding:7px 14px;border-radius:8px;transition:all 0.2s}
 .nav-link:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.nav-link-admin{color:var(--a4);border:1px solid rgba(255,179,71,0.3)}
+.nav-link-admin:hover{color:var(--a4);background:rgba(255,179,71,0.1)}
 .nav-cta{background:var(--a1);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;text-decoration:none;transition:all 0.2s;font-family:var(--fh)}
 .nav-cta:hover{background:var(--a1l);transform:translateY(-1px)}
 
