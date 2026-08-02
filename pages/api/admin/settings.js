@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
 import { getAuthUser } from "../../../lib/getAuthUser";
 import { isAdminEmail } from "../../../lib/isAdmin";
+import { invalidatePlanConfigCache } from "../../../lib/planConfig";
 
 const DEFAULTS = {
   fixed_monthly_costs: { vercel: 0, supabase: 0, other: 0 },
@@ -46,6 +47,7 @@ export default async function handler(req, res) {
       .from("admin_settings")
       .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
     if (error) return res.status(500).json({ success: false, error: error.message });
+    if (key === "plan_config") invalidatePlanConfigCache();
     return res.status(200).json({ success: true, data: value });
   }
 
