@@ -168,10 +168,15 @@ export default function Account() {
   const [upgrading, setUpgrading] = useState(null); // "premium" | "pro"
   const [cancelling, setCancelling] = useState(false);
   const [toast, setToast] = useState(null); // { msg, type }
+  const [planConfig, setPlanConfig] = useState(null);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
   }, [loading, user, router]);
+
+  useEffect(() => {
+    fetch("/api/plan-config").then((r) => r.json()).then((d) => { if (d.success) setPlanConfig(d.data); }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!user || !supabase) return;
@@ -385,11 +390,15 @@ export default function Account() {
                 {isCurrent && <div className="plan-popular-tag" style={{ background: "var(--a3)", color: "#06060a" }}>Current Plan</div>}
 
                 <div className="plan-name" style={{ color: plan.color }}>{plan.name}</div>
-                <div className="plan-price" style={{ color: plan.color }}>{plan.price}</div>
+                <div className="plan-price" style={{ color: plan.color }}>
+                  {planConfig && plan.id === "premium" ? `$${planConfig.premiumPrice}` : planConfig && plan.id === "pro" ? `$${planConfig.proPrice}` : plan.price}
+                </div>
                 <div className="plan-period">{plan.period}</div>
 
                 <ul className="plan-features">
-                  {plan.features.map((f) => <li key={f}>{f}</li>)}
+                  {plan.features.map((f) => (
+                    <li key={f}>{plan.id === "free" && planConfig && /generations \/ day/.test(f) ? `${planConfig.freeDailyLimit} generations / day` : f}</li>
+                  ))}
                   {plan.missing.map((f) => <li key={f} className="miss">{f}</li>)}
                 </ul>
 
