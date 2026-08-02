@@ -662,12 +662,14 @@ export default function Admin() {
                     <div className="ad-empty" style={{ padding: 24 }}>No users yet.</div>
                   ) : (
                     <table className="ad-table">
-                      <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Signed up</th><th>Plan</th><th>Change plan</th><th>Role</th><th>Change role</th></tr></thead>
+                      <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Signed up</th><th>Generations</th><th>Rate-limit hits</th><th>Plan</th><th>Change plan</th><th>Role</th><th>Change role</th></tr></thead>
                       <tbody>
                         {users.map((u) => (
                           <tr key={u.id}>
                             <td style={{ paddingLeft: 20 }}>{u.email}</td>
                             <td style={{ color: "var(--text3)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                            <td>{u.totalHits.toLocaleString()}</td>
+                            <td style={{ color: u.rateLimitHits > 0 ? "#f59e0b" : "var(--text3)", fontWeight: u.rateLimitHits > 0 ? 600 : 400 }}>{u.rateLimitHits}</td>
                             <td><span className={`tier-pill ${u.subscription_tier}`}>{u.subscription_tier}</span></td>
                             <td>
                               <select

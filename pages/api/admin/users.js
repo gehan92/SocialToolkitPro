@@ -21,6 +21,19 @@ export default async function handler(req, res) {
     const { data: authList, error: authError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
     if (authError) return res.status(500).json({ success: false, error: authError.message });
 
+    // Per-user hit counts: total API calls vs. how many of those hit the
+    // free-tier rate limit (429s) - shown as two columns in the Users tab
+    // so an admin can see usage/upgrade-pressure per user, not just an
+    // aggregate top-5 leaderboard.
+    const { data: logs } = await supabaseAdmin.from("api_usage_logs").select("user_id, status_code");
+    const totalHitsById = {};
+    const rateLimitHitsById = {};
+    (logs || []).forEach((l) => {
+      if (!l.user_id) return;
+      totalHitsById[l.user_id] = (totalHitsById[l.user_id] || 0) + 1;
+      if (l.status_code === 429) rateLimitHitsById[l.user_id] = (rateLimitHitsById[l.user_id] || 0) + 1;
+    });
+
     const emailById = {};
     (authList?.users || []).forEach((u) => {
       emailById[u.id] = u.email;
@@ -38,6 +51,8 @@ export default async function handler(req, res) {
         role: p.role === "admin" || isAdminEmail(email) ? "admin" : "user",
         isBootstrapAdmin: isAdminEmail(email),
         created_at: p.created_at,
+        totalHits: totalHitsById[p.id] || 0,
+        rateLimitHits: rateLimitHitsById[p.id] || 0,
       };
     });
 
