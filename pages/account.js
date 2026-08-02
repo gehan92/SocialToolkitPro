@@ -86,6 +86,7 @@ const CSS = `
 .tier-free{background:rgba(153,152,176,0.15);color:var(--text2)}
 .tier-premium{background:rgba(91,79,255,0.15);color:#a097ff}
 .tier-pro{background:rgba(255,179,71,0.15);color:var(--a4)}
+.tier-admin{background:rgba(255,179,71,0.15);color:var(--a4)}
 
 /* ── USERNAME EDIT ── */
 .acct-username-edit{display:flex;gap:8px;align-items:center}
@@ -169,6 +170,7 @@ export default function Account() {
   const [cancelling, setCancelling] = useState(false);
   const [toast, setToast] = useState(null); // { msg, type }
   const [planConfig, setPlanConfig] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -186,6 +188,13 @@ export default function Account() {
     supabase.from("daily_usage").select("generations_count")
       .eq("user_id", user.id).eq("usage_date", today).maybeSingle()
       .then(({ data }) => setUsageToday(data?.generations_count ?? 0));
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      fetch("/api/admin/whoami", { headers: { Authorization: `Bearer ${session?.access_token}` } })
+        .then((r) => r.json())
+        .then((d) => setIsAdmin(!!d.isAdmin))
+        .catch(() => setIsAdmin(false));
+    });
   }, [user?.id]);
 
   function showToast(msg, type = "success") {
@@ -350,15 +359,21 @@ export default function Account() {
           {/* Current Plan */}
           <div className="acct-row">
             <span className="acct-label">Current Plan</span>
-            <span className={`tier-badge tier-${tier}`}>
-              {tier === "free" ? "Free" : tier === "premium" ? "💎 Premium" : "👑 Pro"}
-            </span>
+            {isAdmin ? (
+              <span className="tier-badge tier-admin">👑 Admin — Full Access</span>
+            ) : (
+              <span className={`tier-badge tier-${tier}`}>
+                {tier === "free" ? "Free" : tier === "premium" ? "💎 Premium" : "👑 Pro"}
+              </span>
+            )}
           </div>
 
           {/* Usage today */}
           <div className="acct-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
             <span className="acct-label">Generations today</span>
-            {tier === "free" ? (
+            {isAdmin ? (
+              <span className="acct-value" style={{ color: "var(--a4)" }}>♾ Unlimited — Admin access</span>
+            ) : tier === "free" ? (
               <div className="usage-bar-wrap" style={{ width: "100%" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 14, color: "var(--text)" }}>{usageToday} of {freeLimit} used</span>
@@ -379,14 +394,25 @@ export default function Account() {
 
         {/* ── PLAN MANAGEMENT ── */}
         <div className="acct-section-title">Plan & Billing</div>
+
+        {isAdmin && (
+          <div className="checkout-banner" style={{ background: "rgba(255,179,71,0.08)", borderColor: "rgba(255,179,71,0.25)" }}>
+            <span className="checkout-banner-icon">👑</span>
+            <div className="checkout-banner-text" style={{ color: "var(--a4)" }}>
+              <strong>Admin account — you already have full access to everything</strong>
+              These plans are shown for reference only. You don't need to purchase or upgrade any of them.
+            </div>
+          </div>
+        )}
+
         <div className="plan-grid">
           {PLANS.map((plan) => {
-            const isCurrent = tier === plan.id;
-            const isDowngrade = (tier === "pro" && plan.id === "premium") || (tier !== "free" && plan.id === "free");
-            const isUpgrade = !isCurrent && !isDowngrade;
+            const isCurrent = !isAdmin && tier === plan.id;
+            const isDowngrade = !isAdmin && ((tier === "pro" && plan.id === "premium") || (tier !== "free" && plan.id === "free"));
+            const isUpgrade = !isAdmin && !isCurrent && !isDowngrade;
             return (
               <div key={plan.id} className={`plan-card plan-${plan.id}${isCurrent ? " current" : ""}`}>
-                {plan.popular && !isCurrent && <div className="plan-popular-tag">Most Popular</div>}
+                {plan.popular && !isCurrent && !isAdmin && <div className="plan-popular-tag">Most Popular</div>}
                 {isCurrent && <div className="plan-popular-tag" style={{ background: "var(--a3)", color: "#06060a" }}>Current Plan</div>}
 
                 <div className="plan-name" style={{ color: plan.color }}>{plan.name}</div>
@@ -402,7 +428,9 @@ export default function Account() {
                   {plan.missing.map((f) => <li key={f} className="miss">{f}</li>)}
                 </ul>
 
-                {isCurrent ? (
+                {isAdmin ? (
+                  <button className="plan-btn btn-current" disabled>✓ Included (Admin)</button>
+                ) : isCurrent ? (
                   <button className="plan-btn btn-current" disabled>Current Plan</button>
                 ) : isUpgrade ? (
                   <button
@@ -423,8 +451,8 @@ export default function Account() {
           })}
         </div>
 
-        {/* ── CANCEL SUBSCRIPTION (only if paid) ── */}
-        {tier !== "free" && (
+        {/* ── CANCEL SUBSCRIPTION (only if paid, never for admin) ── */}
+        {tier !== "free" && !isAdmin && (
           <>
             <div className="acct-section-title" style={{ marginTop: 40 }}>Danger Zone</div>
             <div className="danger-card">
