@@ -126,6 +126,13 @@ const GROWTH_PERIODS = ["daily", "weekly", "monthly", "yearly"];
 const SCALING_NOTES = [
   {
     severity: "high",
+    title: "Gemini API key is on the free tier — 20 requests/day, project-wide",
+    where: "GEMINI_API_KEY (Google AI Studio project settings)",
+    body: "Confirmed live while testing: Google returned a 429 RESOURCE_EXHAUSTED error after ~20 generate calls, quota \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", limit 20/day. This is a hard cap shared by every user of the entire app combined, not per-user — once it's hit, every single generation tool returns an error for everyone, for the rest of the day, regardless of subscription tier. The free plan's own 10/day-per-user limit already exceeds this: two active free users alone could exhaust the whole app's daily Gemini budget.",
+    fix: "Enable billing (pay-as-you-go) on the Google AI Studio / Cloud project tied to this API key before relying on this in production — this is the most urgent item on this list, more so than any of the below.",
+  },
+  {
+    severity: "high",
     title: "Admin dashboard does full-table scans",
     where: "pages/api/admin/stats.js",
     body: "Pulls every row from profiles, api_usage_logs, daily_usage, subscriptions, and revenue_events on every dashboard load, then aggregates in JavaScript. This is a data-volume problem, not a concurrent-user one — as api_usage_logs grows into the hundreds of thousands of rows over time, this page gets slower and will eventually time out.",
