@@ -70,6 +70,38 @@ Not "busy for a second" — actually down for an hour. Every tool stops working 
 
 ---
 
+## 💰 Paid-Tier "Unlimited" Is Actually Risky — What To Do About It
+
+**Confirmed:** Premium and Pro are currently *literally* unlimited — zero cap, no ceiling, forever. This is a real business risk, not just a technical one, for two reasons:
+
+- **Cost risk:** if one $29/month Pro customer generates thousands of times, they could cost more in Gemini API fees than they pay — you'd be losing money on that specific customer.
+- **Availability risk:** since the whole app shares *one* Gemini quota bucket (see the section above), a single heavy "unlimited" user can exhaust the entire app's daily AI budget alone and break the tool for every other customer too.
+
+**Why almost no real AI SaaS actually offers literal unlimited:** they say "unlimited" in marketing, but quietly enforce a generous "fair use" cap behind the scenes — high enough that ~99% of real users never notice it, but it stops the outlier who'd otherwise cost more than they pay or take down shared infrastructure.
+
+### Recommendation
+Keep advertising "unlimited" to customers (still true for how anyone normally uses it), but add a quiet, generous daily ceiling:
+- Premium: suggest something like 200–300/day
+- Pro: suggest something like 500–1000/day
+
+A real user doing 20-30 generations a day would never come close to hitting either number.
+
+### The math to check before finalizing numbers
+```
+Profit per generation = (subscription price ÷ typical generations per month) − (real Gemini cost per generation)
+```
+The admin dashboard currently *assumes* $0.001 per generation for the Gemini cost line — that's a rough placeholder in the code, not real billing data. Since the token-budget fixes above increased how much each tool is allowed to generate per call, the real cost per generation is likely higher now. **Once Gemini billing is enabled, check Google's actual per-token price and recalculate** to confirm $9/$29 pricing still leaves healthy margin even for active users, not just typical ones.
+
+### The general playbook other AI products use to stay profitable
+1. Price the plan assuming *typical* usage, not worst-case usage.
+2. Set a generous fair-use cap so the worst-case customer can't wreck margins or shared quota.
+3. Watch for outliers — someone costing more than they pay — and message/upsell/throttle as needed.
+4. Keep AI cost a small enough slice of the subscription price that normal usage stays clearly profitable.
+
+**Status:** Not implemented yet — this is a decision to make (the exact cap numbers) before it's built. The Free tier's daily limit is already admin-editable (Plans tab); Premium/Pro currently have no equivalent setting, since they were never intended to be limited until this discussion.
+
+---
+
 ## 📋 Priority Order
 
 | # | Item | Effort | When |
@@ -79,6 +111,7 @@ Not "busy for a second" — actually down for an hour. Every tool stops working 
 | 3 | Retry/backoff on transient Gemini errors | Small (code) | Soon |
 | 2 | Budget alert/cap in Google Cloud | Small (Google console) | Right after #1 |
 | 4 | Usage warning banner in admin dashboard | Small–medium (code) | When convenient |
+| 7 | Fair-use daily cap on Premium/Pro (still "unlimited" to customers) | Small–medium (code) | Before real paid traffic grows |
 | 6 | Backup AI provider | Large | Later — only if it becomes a real problem |
 
 ---
