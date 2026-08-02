@@ -6,11 +6,12 @@ import { supabase } from "../lib/supabaseClient";
 export default function SiteNav() {
   const { user, loading } = useAuthUser();
   const [username, setUsername] = useState("");
+  const [dbTier, setDbTier] = useState("free");
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!user || !supabase) {
-      if (typeof window !== "undefined") window.__stUserTier = "free";
+      setDbTier("free");
       setUsername("");
       setIsAdmin(false);
       return;
@@ -21,7 +22,7 @@ export default function SiteNav() {
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
-        window.__stUserTier = data?.subscription_tier || "free";
+        setDbTier(data?.subscription_tier || "free");
         setUsername(data?.username || "");
       });
 
@@ -32,6 +33,23 @@ export default function SiteNav() {
         .catch(() => setIsAdmin(false));
     });
   }, [user?.id]);
+
+  // window.__stUserTier drives every Premium/Pro paywall gate in the legacy
+  // site.js tool UI. Admins get treated as Pro here too, on top of the
+  // already-admin-aware server-side checks - otherwise an admin would pass
+  // the API's tier check but still see the "Upgrade to Pro" overlay in the
+  // browser, since that overlay reads this value, not the real tier.
+  // site.js's own updateAllTierGates() only re-runs on the "st-auth-ready"
+  // event (fired once, as soon as the session resolves) or on page load -
+  // neither of which happens again once this profile/admin fetch finishes
+  // a moment later, so the gate banners would otherwise stay stuck showing
+  // whatever they showed at that earlier point. Call it directly once we
+  // have the real tier.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.__stUserTier = isAdmin ? "pro" : dbTier;
+    window.updateAllTierGates?.();
+  }, [isAdmin, dbTier]);
 
   async function handleLogout() {
     if (supabase) await supabase.auth.signOut();
