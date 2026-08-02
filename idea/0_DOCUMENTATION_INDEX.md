@@ -17,7 +17,8 @@ This folder contains **5 comprehensive documents** covering every aspect of Soci
 ├─ 3_PRICING_STRATEGY.md
 ├─ 4_FEATURES_PRODUCT_ROADMAP.md
 ├─ 5_MARKETING_GO_TO_MARKET_STRATEGY.md
-└─ 6_SCALING_RELIABILITY_NOTES.md (added post-launch, Aug 2026)
+├─ 6_SCALING_RELIABILITY_NOTES.md (added post-launch, Aug 2026)
+└─ 7_BILLING_SUBSCRIPTION_MANAGEMENT_NOTES.md (added post-launch, Aug 2026)
 ```
 
 ---
@@ -209,6 +210,21 @@ This folder contains **5 comprehensive documents** covering every aspect of Soci
 **Use this for:** Understanding production reliability risks with the AI provider before/while scaling real usage
 
 **Key action:** Enable billing on the Gemini API project — this is currently the #1 blocker to relying on the app under real traffic.
+
+---
+
+### 7. Billing & Subscription Management Notes (10 min read)
+**File:** `7_BILLING_SUBSCRIPTION_MANAGEMENT_NOTES.md`
+
+**Contains:**
+- What's already built: cancel-at-period-end flow, upgrade button
+- Two gaps found in the current plan-change code (upgrade risks creating a duplicate Stripe subscription; downgrade currently fully cancels instead of switching plans)
+- How professional SaaS sites handle plan changes/cancellation — Stripe Customer Portal vs. custom flow
+- Recommendation for a solo owner
+
+**Use this for:** Deciding how to handle plan upgrades/downgrades/cancellations correctly before real paying customers hit the two gaps above
+
+**Key action:** None yet — a decision (Stripe Customer Portal vs. fixing the custom flow) is pending before either is implemented.
 
 ---
 
