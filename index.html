@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="bH1YrYWgBcdYEvkI5eMCXL3OpVH-3eATe7tE-B3Gyvs" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Hashtag Generator & AI Caption Writer for Instagram, TikTok, YouTube — SocialToolkit</title>
+<meta name="description" content="Free AI tools for content creators. Generate hashtags for Instagram & TikTok, write captions, create bios, and get YouTube video ideas in seconds. 100% free, no sign up.">
+<meta name="keywords" content="free hashtag generator, instagram hashtag generator, tiktok hashtag generator, ai caption writer, instagram caption generator, free bio maker, youtube video idea generator, free ai tools for creators, social media tools free, content creator tools">
+<meta name="robots" content="index, follow">
+<meta name="author" content="SocialToolkit">
+<meta name="language" content="English">
+<meta name="revisit-after" content="7 days">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.socialtoolkitpro.com/">
+<meta property="og:title" content="Free Hashtag Generator & AI Caption Writer — SocialToolkit">
+<meta property="og:description" content="Free AI tools for content creators. Hashtag generator, caption writer, bio maker & video idea generator. No sign up needed!">
+<meta property="og:site_name" content="SocialToolkit">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Hashtag Generator & AI Caption Writer — SocialToolkit">
+<meta name="twitter:description" content="Free AI tools for content creators. Hashtag generator, caption writer, bio maker & video idea generator. No sign up needed!">
+
+<!-- Canonical URL -->
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="canonical" href="https://www.socialtoolkitpro.com/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='9' fill='%230e0e16'/%3E%3Crect x='7' y='21' width='5' height='9' rx='2' fill='%235b4fff'/%3E%3Crect x='14' y='16' width='5' height='14' rx='2' fill='%237c6dff'/%3E%3Crect x='21' y='10' width='5' height='20' rx='2' fill='%23ff4f9b'/%3E%3Ccircle cx='30' cy='8' r='5' fill='%2300e5a0'/%3E%3Ctext x='30' y='11' font-family='system-ui' font-size='5' font-weight='800' fill='%23060610' text-anchor='middle'%3EAI%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#06060a;
+  --surface:#0e0e16;
+  --card:#13131e;
+  --card2:#181825;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.1);
+  --border3:rgba(255,255,255,0.16);
+  --text:#eeedf5;
+  --text2:#9998b0;
+  --text3:#5f5e74;
+  --a1:#5b4fff;
+  --a1l:#7c6dff;
+  --a2:#ff4f9b;
+  --a3:#00e5a0;
+  --a4:#ffb347;
+  --fh:'Clash Display',sans-serif;
+  --fb:'Cabinet Grotesk',sans-serif;
+  --r:14px;
+  --r2:20px;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.65;overflow-x:hidden}
+
+/* ── GRID TEXTURE ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0
+}
+
+/* ── GLOW ORBS ── */
+.orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:0.18}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,var(--a1),transparent 70%);top:-200px;left:-150px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,var(--a2),transparent 70%);bottom:-100px;right:-100px;opacity:0.12}
+.orb3{width:400px;height:400px;background:radial-gradient(circle,var(--a3),transparent 70%);top:50%;left:60%;opacity:0.07}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(6,6,10,0.8);
+  backdrop-filter:blur(20px) saturate(1.5);
+  border-bottom:1px solid var(--border);
+}
+.nav-wrap{max-width:1100px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;letter-spacing:-0.5px}
+.logo-mark{
+  width:36px;height:36px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-link{font-size:13px;font-weight:500;color:var(--text2);text-decoration:none;padding:7px 14px;border-radius:8px;transition:all 0.2s}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.nav-cta{background:var(--a1);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;text-decoration:none;transition:all 0.2s;font-family:var(--fh)}
+.nav-cta:hover{background:var(--a1l);transform:translateY(-1px)}
+
+/* ── HERO ── */
+.hero{padding:100px 28px 80px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(91,79,255,0.3);
+  background:rgba(91,79,255,0.08);
+  color:#a097ff;font-size:12px;font-weight:500;
+  padding:6px 16px;border-radius:100px;margin-bottom:32px;
+  letter-spacing:0.3px;
+}
+.hero-eyebrow span{width:6px;height:6px;border-radius:50%;background:var(--a1);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+.hero h1{
+  font-family:var(--fh);
+  font-size:clamp(44px,7vw,80px);
+  font-weight:700;
+  line-height:1.0;
+  letter-spacing:-3px;
+  margin-bottom:24px;
+  max-width:800px;
+}
+.hero h1 em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,0.3)}
+.hero h1 .grad{
+  background:linear-gradient(135deg,var(--a1l) 0%,var(--a2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{font-size:18px;color:var(--text2);max-width:520px;line-height:1.7;margin-bottom:40px;font-weight:300}
+.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:60px}
+.btn-hero{
+  font-family:var(--fh);font-size:15px;font-weight:600;
+  padding:14px 28px;border-radius:12px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:all 0.2s;cursor:pointer;border:none;
+}
+.btn-hero-primary{background:var(--a1);color:#fff}
+.btn-hero-primary:hover{background:var(--a1l);transform:translateY(-2px)}
+.btn-hero-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-hero-ghost:hover{color:var(--text);border-color:var(--border3);background:rgba(255,255,255,0.04)}
+
+/* stats row */
+.stats{display:flex;gap:40px;flex-wrap:wrap}
+.stat-item{display:flex;flex-direction:column;gap:2px}
+.stat-num{font-family:var(--fh);font-size:28px;font-weight:700;letter-spacing:-1px}
+.stat-label{font-size:12px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+
+/* ── TRUST BADGES ── */
+.trust-bar{
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:20px 28px;
+  background:rgba(255,255,255,0.015);
+  position:relative;z-index:1;
+}
+.trust-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);font-weight:500}
+.trust-icon{font-size:16px}
+
+/* ── HOW IT WORKS ── */
+.section{padding:80px 28px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.section-tag{
+  font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--a1l);margin-bottom:12px;
+}
+.section-title{font-family:var(--fh);font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-1.5px;margin-bottom:16px;line-height:1.1}
+.section-sub{font-size:16px;color:var(--text2);max-width:480px;font-weight:300;line-height:1.7;margin-bottom:48px}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.step-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:28px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.2s,transform 0.2s;
+}
+.step-card:hover{border-color:var(--border2);transform:translateY(-3px)}
+.step-num{
+  font-family:var(--fh);font-size:48px;font-weight:700;
+  color:rgba(255,255,255,0.04);
+  position:absolute;top:16px;right:20px;line-height:1;
+  letter-spacing:-2px;
+}
+.step-icon{font-size:28px;margin-bottom:16px}
+.step-title{font-family:var(--fh);font-size:16px;font-weight:600;margin-bottom:8px;letter-spacing:-0.3px}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ── TOOLS ── */
+.tools-section{padding:20px 28px 80px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
+
+.tool-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;padding:6px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);width:fit-content}
+.tab-btn{
+  font-family:var(--fh);font-size:13px;font-weight:600;
+  padding:9px 20px;border-radius:12px;border:none;
+  cursor:pointer;transition:all 0.2s;color:var(--text2);
+  background:transparent;letter-spacing:-0.2px;display:flex;align-items:center;gap:6px;
+}
+.tab-btn.active{background:var(--a1);color:#fff}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.05)}
+
+.tool-panel{display:none;animation:fadeUp 0.3s ease}
+.tool-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:680px){.tool-panel.active{grid-template-columns:1fr}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.input-panel,.output-panel{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:28px;
+}
+.panel-title{font-family:var(--fh);font-size:15px;font-weight:600;letter-spacing:-0.3px;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--text2)}
+.panel-title span{font-size:18px}
+
+label{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px}
+
+input[type=text],textarea,select{
+  width:100%;background:var(--bg);border:1px solid var(--border2);
+  border-radius:10px;color:var(--text);font-family:var(--fb);font-size:14px;
+  padding:11px 14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+  margin-bottom:16px;resize:none;-webkit-appearance:none;
+}
+input[type=text]:focus,textarea:focus,select:focus{
+  border-color:var(--a1);box-shadow:0 0 0 3px rgba(91,79,255,0.15);
+}
+select option{background:var(--surface)}
+textarea{min-height:90px}
+
+.toggle-group{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.toggle{
+  font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;
+  border:1px solid var(--border2);color:var(--text2);cursor:pointer;
+  transition:all 0.15s;background:transparent;user-select:none;font-family:var(--fb);
+}
+.toggle:hover{color:var(--text)}
+.toggle.on{background:rgba(91,79,255,0.15);border-color:rgba(91,79,255,0.4);color:#a097ff}
+.toggle.on.pink{background:rgba(255,79,155,0.12);border-color:rgba(255,79,155,0.35);color:#ff7eb8}
+.toggle.on.teal{background:rgba(0,229,160,0.1);border-color:rgba(0,229,160,0.3);color:var(--a3)}
+.toggle.on.amber{background:rgba(255,179,71,0.1);border-color:rgba(255,179,71,0.3);color:var(--a4)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+
+.generate-btn{
+  width:100%;font-family:var(--fh);font-size:14px;font-weight:600;
+  padding:13px;border-radius:10px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;letter-spacing:-0.2px;margin-top:4px;
+}
+.generate-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+.gbtn-purple{background:var(--a1);color:#fff}
+.gbtn-purple:hover:not(:disabled){background:var(--a1l);transform:translateY(-1px)}
+.gbtn-pink{background:var(--a2);color:#fff}
+.gbtn-pink:hover:not(:disabled){background:#ff6daa;transform:translateY(-1px)}
+.gbtn-teal{background:var(--a3);color:#060610}
+.gbtn-teal:hover:not(:disabled){background:#33edb4;transform:translateY(-1px)}
+.gbtn-amber{background:var(--a4);color:#060610}
+.gbtn-amber:hover:not(:disabled){background:#ffbf60;transform:translateY(-1px)}
+
+/* output panel */
+.out-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:200px;gap:12px;text-align:center;
+}
+.out-empty-icon{font-size:36px;opacity:0.3}
+.out-empty-text{font-size:13px;color:var(--text3)}
+
+.out-result{display:none;animation:fadeUp 0.3s ease}
+.out-result.show{display:block}
+
+.out-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.out-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px}
+.copy-btn{
+  font-size:12px;font-weight:500;padding:5px 12px;border-radius:7px;
+  border:1px solid var(--border2);color:var(--text2);background:transparent;
+  cursor:pointer;transition:all 0.2s;font-family:var(--fb);
+}
+.copy-btn:hover{color:var(--text);border-color:var(--border3);background:rgba(255,255,255,0.04)}
+.copy-btn.done{color:var(--a3);border-color:rgba(0,229,160,0.3)}
+
+.out-text{font-size:14px;line-height:1.75;color:var(--text);white-space:pre-wrap}
+
+.tag-cloud{display:flex;flex-wrap:wrap;gap:7px}
+.htag{
+  background:rgba(91,79,255,0.1);border:1px solid rgba(91,79,255,0.2);
+  color:#a097ff;font-size:13px;padding:5px 13px;border-radius:100px;
+  cursor:pointer;transition:all 0.15s;user-select:none;
+}
+.htag:hover{background:rgba(91,79,255,0.18)}
+.htag.cp{background:rgba(0,229,160,0.1);border-color:rgba(0,229,160,0.25);color:var(--a3)}
+
+.idea-list{display:flex;flex-direction:column;gap:10px}
+.idea-item{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;
+}
+.idea-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;font-family:var(--fh);letter-spacing:-0.2px}
+.idea-desc{font-size:12px;color:var(--text2);line-height:1.5}
+
+/* spinner */
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,0.25);border-top-color:currentColor;border-radius:50%;animation:rot 0.7s linear infinite;display:none}
+.spin.v{display:inline-block}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ── TESTIMONIALS ── */
+
+
+
+
+
+
+
+
+
+
+/* ── FAQ ── */
+.faq-section{padding:20px 28px 80px;max-width:800px;margin:0 auto;position:relative;z-index:1}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0}
+.faq-q{font-family:var(--fh);font-size:15px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;letter-spacing:-0.3px}
+.faq-q::after{content:'+';font-size:20px;color:var(--text3);flex-shrink:0;transition:transform 0.2s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{font-size:14px;color:var(--text2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s}
+.faq-item.open .faq-a{max-height:200px;padding-top:12px}
+
+/* ── CTA BANNER ── */
+.cta-banner{
+  margin:0 28px 80px;max-width:1044px;margin-left:auto;margin-right:auto;
+  background:linear-gradient(135deg,rgba(91,79,255,0.2) 0%,rgba(255,79,155,0.1) 100%);
+  border:1px solid rgba(91,79,255,0.25);border-radius:24px;
+  padding:56px 48px;text-align:center;position:relative;z-index:1;overflow:hidden;
+}
+.cta-banner::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(91,79,255,0.15),transparent 70%);
+  pointer-events:none;
+}
+.cta-banner h2{font-family:var(--fh);font-size:clamp(28px,4vw,44px);font-weight:700;letter-spacing:-1.5px;margin-bottom:16px;line-height:1.1}
+.cta-banner p{font-size:16px;color:var(--text2);margin-bottom:32px;font-weight:300}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:48px 28px 32px;position:relative;z-index:1;
+}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand p{font-size:13px;color:var(--text2);margin-top:10px;max-width:240px;line-height:1.6}
+.footer-col-title{font-family:var(--fh);font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px}
+.footer-links{display:flex;flex-direction:column;gap:9px}
+.footer-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--text)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:12px;color:var(--text3)}
+.footer-legal{display:flex;gap:20px}
+.footer-legal a{font-size:12px;color:var(--text3);text-decoration:none;transition:color 0.2s}
+.footer-legal a:hover{color:var(--text2)}
+
+/* ── AD SLOT ── */
+.ad-slot{
+  background:rgba(255,255,255,0.02);border:1px dashed var(--border2);
+  border-radius:12px;padding:22px;text-align:center;
+  color:var(--text3);font-size:12px;letter-spacing:0.5px;
+  margin:0 28px 32px;max-width:1044px;margin-left:auto;margin-right:auto;
+}
+
+/* ── RESPONSIVE ── */
+/* ── TABLET (max 1024px) ── */
+@media(max-width:1024px){
+  .hero h1{font-size:52px;letter-spacing:-2px}
+  .footer-top{grid-template-columns:1fr 1fr}
+}
+
+/* ── SMALL TABLET / LARGE PHONE (max 768px) ── */
+@media(max-width:768px){
+  .nav-link{display:none}
+  .stats{gap:20px}
+  .hero h1{font-size:42px;letter-spacing:-1.5px}
+  .hero-sub{font-size:16px}
+  .section-title{font-size:30px}
+  .tool-tabs{width:100%;justify-content:stretch}
+  .tab-btn{flex:1;justify-content:center;font-size:12px;padding:8px 10px}
+  .input-panel,.output-panel{padding:20px}
+  
+  .trust-inner{gap:16px}
+  .trust-item{font-size:12px}
+  .cta-banner{padding:40px 28px}
+  .cta-banner h2{font-size:30px}
+  .ad-slot{margin:0 0 24px}
+  .section,.tools-section,.faq-section{padding-left:20px;padding-right:20px}
+}
+
+/* ── MOBILE (max 480px) ── */
+@media(max-width:480px){
+  nav{padding:0 16px}
+  .nav-wrap{padding:0 16px}
+  .logo{font-size:16px}
+  .nav-cta{font-size:12px;padding:7px 14px}
+  .hero{padding:48px 16px 40px}
+  .hero h1{font-size:34px;letter-spacing:-1px}
+  .hero-sub{font-size:15px}
+  .hero-eyebrow{font-size:11px;padding:5px 12px}
+  .hero-actions{flex-direction:column;align-items:stretch;gap:10px}
+  .btn-hero{width:100%;justify-content:center;padding:13px 20px;font-size:14px}
+  .stats{gap:16px}
+  .stat-num{font-size:22px}
+  .stat-label{font-size:10px}
+  .trust-bar{padding:14px 16px}
+  .trust-inner{gap:10px;justify-content:flex-start}
+  .trust-item{font-size:11px}
+  .section,.tools-section,.faq-section{padding-left:16px;padding-right:16px}
+  .section-title{font-size:26px;letter-spacing:-0.5px}
+  .section-sub{font-size:14px}
+  .steps{grid-template-columns:1fr}
+  .step-card{padding:20px}
+  .tool-tabs{gap:4px;padding:4px;border-radius:14px}
+  .tab-btn{font-size:11px;padding:8px 6px;border-radius:9px}
+  .input-panel,.output-panel{padding:16px}
+  .panel-title{font-size:14px}
+  .generate-btn{font-size:13px;padding:12px}
+  .toggle{font-size:11px;padding:5px 10px}
+  .tone-grid{grid-template-columns:repeat(2,1fr)}
+  .out-text{font-size:13px}
+  .tag-cloud{gap:5px}
+  .htag{font-size:12px;padding:4px 10px}
+  .idea-item{padding:12px}
+  .idea-title{font-size:12px}
+  .idea-desc{font-size:11px}
+  
+  .faq-q{font-size:14px}
+  .faq-a{font-size:13px}
+  .cta-banner{padding:28px 16px;border-radius:16px;margin:0 16px 48px}
+  .cta-banner h2{font-size:24px;letter-spacing:-0.5px}
+  .cta-banner p{font-size:14px}
+  .footer-top{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;align-items:flex-start;gap:8px}
+  footer{padding:32px 16px 24px}
+  .ad-slot{margin:0 16px 20px;padding:14px;font-size:11px}
+}
+
+/* ── VERY SMALL PHONES (max 360px) ── */
+@media(max-width:360px){
+  .hero h1{font-size:28px}
+  .tab-btn{font-size:10px;padding:7px 4px}
+  .tool-tabs{gap:2px}
+  .stat-num{font-size:18px}
+}
+
+/* ── COOKIE BANNER ── */
+.cookie-banner{position:fixed;bottom:20px;left:20px;right:20px;max-width:520px;background:rgba(8,8,17,0.97);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:9999;display:flex;flex-direction:column;gap:14px;animation:stSlideUp 0.4s ease;font-size:13px;line-height:1.6;backdrop-filter:blur(20px)}
+@keyframes stSlideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.cookie-banner.hidden{display:none}
+.cookie-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.cookie-text{color:rgba(255,255,255,0.5);font-size:12px}
+.cookie-text a{color:rgba(255,255,255,0.75);text-decoration:underline}
+.cookie-btns{display:flex;gap:8px;flex-wrap:wrap}
+.cookie-accept{background:linear-gradient(135deg,#4f46e5,#db2777);color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:var(--fh)}
+.cookie-accept:hover{opacity:0.9;transform:translateY(-1px)}
+.cookie-decline{background:transparent;color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.12);padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.15s;font-family:var(--fb)}
+.cookie-decline:hover{color:rgba(255,255,255,0.65)}
+
+/* ── MULTILINGUAL HINT ── */
+.ml-hint{background:rgba(79,70,229,0.1);border:1px solid rgba(79,70,229,0.25);border-radius:8px;padding:10px 14px;font-size:12px;color:#a5b4fc;display:flex;align-items:center;gap:8px;margin-bottom:14px;font-weight:500;line-height:1.5}
+
+/* ── CHARACTER COUNTER ── */
+.char-counter{font-size:11px;color:rgba(255,255,255,0.25);text-align:right;margin-top:-10px;margin-bottom:10px}
+.char-counter.warn{color:#f59e0b}
+.char-counter.over{color:#ef4444}
+
+/* ── PROMPT TIPS ── */
+.tips-toggle{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.25);cursor:pointer;padding:8px 0;border:none;background:transparent;transition:color 0.15s;width:100%;text-align:left;font-family:var(--fh)}
+.tips-toggle:hover{color:rgba(255,255,255,0.5)}
+.tips-toggle.open{color:#a5b4fc}
+.tips-toggle svg{transition:transform 0.2s;flex-shrink:0}
+.tips-toggle.open svg{transform:rotate(180deg)}
+.tips-box{display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.tips-box.show{display:block}
+.tips-list{display:flex;flex-direction:column;gap:8px}
+.tip-item{display:flex;gap:8px;align-items:flex-start}
+.tip-dot{width:5px;height:5px;border-radius:50%;background:#818cf8;flex-shrink:0;margin-top:5px}
+.tip-text{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6}
+.tip-text strong{color:rgba(255,255,255,0.8);font-weight:600}
+.tip-example{margin-top:10px;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.6;font-style:italic}
+.tip-example strong{color:#818cf8;font-style:normal;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:3px}
+
+/* ── AFFILIATE ── */
+.affiliate-section{padding:56px 24px;background:rgba(255,255,255,0.015);border-top:1px solid rgba(255,255,255,0.06)}
+.affiliate-inner{max-width:1200px;margin:0 auto}
+.affiliate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px}
+.affiliate-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s,transform 0.2s;text-decoration:none}
+.affiliate-card:hover{border-color:rgba(255,255,255,0.14);transform:translateY(-2px)}
+.affiliate-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.affiliate-name{font-size:14px;font-weight:600;color:rgba(255,255,255,0.88);letter-spacing:-0.2px;font-family:var(--fh)}
+.affiliate-desc{font-size:12px;color:rgba(255,255,255,0.38);line-height:1.6}
+.affiliate-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:3px 8px;border-radius:100px;width:fit-content}
+.badge-free{background:rgba(16,185,129,0.15);color:#6ee7b7}
+.affiliate-link{font-size:12px;font-weight:600;color:#818cf8;display:flex;align-items:center;gap:4px;margin-top:auto}
+@media(max-width:480px){.affiliate-grid{grid-template-columns:1fr 1fr}.cookie-banner{left:10px;right:10px;bottom:10px;padding:16px}}
+@media(max-width:360px){.affiliate-grid{grid-template-columns:1fr}}
+
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4230227200458981"
+     crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SocialToolkit",
+  "url": "https://www.socialtoolkitpro.com",
+  "description": "Free AI-powered social media tools for content creators. Hashtag generator, caption writer, bio maker and video idea generator. No sign up needed.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Free Hashtag Generator",
+    "Instagram Caption Writer",
+    "Social Media Bio Maker",
+    "Video Idea Generator"
+  ]
+}
+</script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-469MJSXPSL"></script>
+<!-- Cookie Consent Banner -->
+<div class="cookie-banner" id="cookie-banner">
+  <div>
+    <div class="cookie-title">🍪 We use cookies</div>
+    <div class="cookie-text">We use cookies to improve your experience and show relevant ads. By clicking "Accept" you agree to our <a href="privacy.html">Privacy Policy</a>.</div>
+  </div>
+  <div class="cookie-btns">
+    <button class="cookie-accept" onclick="acceptCookies()">Accept all</button>
+    <button class="cookie-decline" onclick="declineCookies()">Decline</button>
+  </div>
+</div>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-469MJSXPSL');
+</script>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-wrap">
+    <a class="logo" href="#">
+      <div class="logo-mark"><svg width="36" height="36" viewBox="0 0 36 36" role="img" aria-label="SocialToolkit logo"><rect width="36" height="36" rx="9" fill="#0e0e16"/><rect x="7" y="21" width="5" height="9" rx="2" fill="#5b4fff"/><rect x="14" y="16" width="5" height="14" rx="2" fill="#7c6dff"/><rect x="21" y="10" width="5" height="20" rx="2" fill="#ff4f9b"/><circle cx="30" cy="8" r="5" fill="#00e5a0"/><text x="30" y="11" font-family="system-ui,sans-serif" font-size="5" font-weight="800" fill="#060610" text-anchor="middle">AI</text></svg></div>
+      SocialToolkit
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="#how">How it works</a>
+      <a class="nav-link" href="#tools">Tools</a>
+      <a class="nav-link" href="#faq">FAQ</a>
+      <a class="nav-cta" href="#tools">Try free →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow"><span></span> 100% free — no account needed</div>
+  <h1>AI tools built for<br><em>every</em> <span class="grad">content creator</span></h1>
+  <p class="hero-sub">Generate hashtags, write captions, create bios, and get fresh video ideas — all powered by AI, completely free.</p>
+  <div class="hero-actions">
+    <a href="#tools" class="btn-hero btn-hero-primary">Start creating free →</a>
+    <a href="#how" class="btn-hero btn-hero-ghost">See how it works</a>
+  </div>
+  <div class="stats">
+    <div class="stat-item"><div class="stat-num" style="color:var(--a1l)">4</div><div class="stat-label">AI Tools</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--a2)">100%</div><div class="stat-label">Free forever</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--a3)">⚡</div><div class="stat-label">Fast results</div></div>
+    <div class="stat-item"><div class="stat-num" style="color:var(--a4)">0</div><div class="stat-label">Sign-up needed</div></div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><span class="trust-icon">✅</span> No sign up required</div>
+    <div class="trust-item"><span class="trust-icon">🔒</span> Your privacy is respected</div>
+    <div class="trust-item"><span class="trust-icon">⚡</span> Fast AI-powered results</div>
+    <div class="trust-item"><span class="trust-icon">🌍</span> Works for all niches</div>
+    <div class="trust-item"><span class="trust-icon">📱</span> Mobile friendly</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section" id="how">
+  <div class="section-tag">How it works</div>
+  <h2 class="section-title">Simple as 1, 2, 3</h2>
+  <p class="section-sub">No complicated settings. Just fill in a few details and get helpful AI-powered results in moments.</p>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-icon">🎯</div>
+      <div class="step-title">Pick your tool</div>
+      <div class="step-desc">Choose from hashtag generator, caption writer, bio maker, or video idea generator.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-icon">✏️</div>
+      <div class="step-title">Describe your content</div>
+      <div class="step-desc">Tell us about your post, niche, or platform. Takes less than 30 seconds.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-icon">⚡</div>
+      <div class="step-title">Get AI results</div>
+      <div class="step-desc">Our AI generates results tailored to your content. Copy and use right away.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <div class="step-icon">🚀</div>
+      <div class="step-title">Grow your audience</div>
+      <div class="step-desc">Use better captions, hashtags and ideas to help your content reach more people.</div>
+    </div>
+  </div>
+</div>
+
+<!-- AD SLOT -->
+<div class="ad-slot"><ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4230227200458981"
+     data-ad-slot="auto"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+
+<!-- TOOLS -->
+<div class="tools-section" id="tools">
+  <div class="section-tag">Free AI tools</div>
+  <h2 class="section-title" style="margin-bottom:32px">Everything you need to create</h2>
+
+  <div class="tool-tabs">
+    <button class="tab-btn active" onclick="switchTab('hashtag',this)"># Hashtags</button>
+    <button class="tab-btn" onclick="switchTab('caption',this)">✍ Captions</button>
+    <button class="tab-btn" onclick="switchTab('bio',this)">👤 Bio Maker</button>
+    <button class="tab-btn" onclick="switchTab('ideas',this)">💡 Video Ideas</button>
+  </div>
+
+  <!-- HASHTAG TOOL -->
+  <div class="tool-panel active" id="panel-hashtag">
+    <div class="input-panel">
+      <div class="panel-title"><span>#</span> Hashtag Generator</div>
+      <div class="ml-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Works in any language — type in English, Spanish, French, Arabic or any language!
+        </div>
+        <label>Topic or niche</label>
+      <input type="text" id="ht-topic" placeholder="e.g. travel photography in Paris, France" maxlength="120">
+      <label>Platform</label>
+      <div class="toggle-group" id="ht-plat">
+        <span class="toggle on" data-v="Instagram">Instagram</span>
+        <span class="toggle" data-v="TikTok">TikTok</span>
+        <span class="toggle" data-v="YouTube">YouTube</span>
+        <span class="toggle" data-v="Twitter/X">Twitter/X</span>
+      </div>
+      <label>How many hashtags?</label>
+      <select id="ht-count">
+        <option value="10">10 hashtags</option>
+        <option value="20" selected>20 hashtags</option>
+        <option value="30">30 hashtags</option>
+      </select>
+      <button class="tips-toggle" onclick="toggleTips('ht-tips',this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Tips for better hashtags
+        </button>
+        <div class="tips-box" id="ht-tips">
+          <div class="tips-list">
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Be specific</strong> — include niche, location and content type for targeted hashtags</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Add your platform</strong> — hashtag styles differ between Instagram, TikTok and YouTube</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Include mood or style</strong> — words like "aesthetic", "viral" or "minimal" help tailor results</div></div>
+          </div>
+          <div class="tip-example"><strong>✦ Good example</strong>"travel photography golden hour Paris France aesthetic lifestyle"</div>
+        </div>
+        <button class="generate-btn gbtn-purple" id="ht-btn" onclick="genHashtags()">
+        <span class="spin" id="ht-spin"></span> Generate hashtags
+      </button>
+    </div>
+    <div class="output-panel">
+      <div class="out-empty" id="ht-empty">
+        <div class="out-empty-icon">#</div>
+        <div class="out-empty-text">Your hashtags will appear here</div>
+      </div>
+      <div class="out-result" id="ht-result">
+        <div class="out-topbar">
+          <span class="out-label">Your hashtags</span>
+          <button class="copy-btn" id="ht-copy-btn" onclick="copyTags()">Copy all</button>
+        </div>
+        <div class="tag-cloud" id="ht-tags"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAPTION TOOL -->
+  <div class="tool-panel" id="panel-caption">
+    <div class="input-panel">
+      <div class="panel-title"><span>✍</span> Caption Writer</div>
+      <label>Describe your photo or video</label>
+      <textarea id="cap-desc" placeholder="e.g. Sunset at Santorini, golden hour, peaceful Mediterranean vibes..."></textarea>
+      <label>Tone</label>
+      <div class="toggle-group" id="cap-tone">
+        <span class="toggle on pink" data-v="Inspirational">✨ Inspirational</span>
+        <span class="toggle pink" data-v="Funny">😂 Funny</span>
+        <span class="toggle pink" data-v="Casual">😊 Casual</span>
+        <span class="toggle pink" data-v="Motivational">🔥 Motivational</span>
+        <span class="toggle pink" data-v="Romantic">💕 Romantic</span>
+        <span class="toggle pink" data-v="Professional">💼 Professional</span>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Platform</label>
+          <select id="cap-plat"><option>Instagram</option><option>TikTok</option><option>Facebook</option><option>LinkedIn</option><option>Twitter/X</option></select>
+        </div>
+        <div>
+          <label>Length</label>
+          <select id="cap-len"><option value="short">Short (1–2 lines)</option><option value="medium" selected>Medium (3–5 lines)</option><option value="long">Long (story style)</option></select>
+        </div>
+      </div>
+      <button class="tips-toggle" onclick="toggleTips('cap-tips',this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Tips for better captions
+        </button>
+        <div class="tips-box" id="cap-tips">
+          <div class="tips-list">
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Describe the scene</strong> — include location, lighting, people and mood</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Add emotion</strong> — words like "laughing", "peaceful", "excited" make captions feel real</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Mention the occasion</strong> — birthday, vacation, weekend, holiday improves relevance</div></div>
+          </div>
+          <div class="tip-example"><strong>✦ Good example</strong>"Family beach trip at golden hour sunset, kids laughing in waves, candid happy summer vibes"</div>
+        </div>
+        <button class="generate-btn gbtn-pink" id="cap-btn" onclick="genCaption()">
+        <span class="spin" id="cap-spin"></span> Write my caption
+      </button>
+    </div>
+    <div class="output-panel">
+      <div class="out-empty" id="cap-empty">
+        <div class="out-empty-icon">✍</div>
+        <div class="out-empty-text">Your caption will appear here</div>
+      </div>
+      <div class="out-result" id="cap-result">
+        <div class="out-topbar">
+          <span class="out-label">Your caption</span>
+          <button class="copy-btn" id="cap-copy-btn" onclick="copyOut('cap-text','cap-copy-btn')">Copy</button>
+        </div>
+        <div class="out-text" id="cap-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIO TOOL -->
+  <div class="tool-panel" id="panel-bio">
+    <div class="input-panel">
+      <div class="panel-title"><span>👤</span> Bio Maker</div>
+      <div class="form-row">
+        <div>
+          <label>Name or username</label>
+          <input type="text" id="bio-name" placeholder="e.g. Alex or @alex.creates">
+        </div>
+        <div>
+          <label>What you do</label>
+          <input type="text" id="bio-niche" placeholder="e.g. lifestyle & travel vlogger">
+        </div>
+      </div>
+      <label>Location (optional)</label>
+      <input type="text" id="bio-loc" placeholder="e.g. London, UK 🇬🇧">
+      <label>About you (interests, achievements)</label>
+      <textarea id="bio-about" placeholder="e.g. coffee lover, fitness enthusiast, sharing daily life in Europe" style="min-height:70px"></textarea>
+      <div class="form-row">
+        <div>
+          <label>Platform</label>
+          <select id="bio-plat"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Twitter/X</option><option>LinkedIn</option></select>
+        </div>
+        <div>
+          <label>Vibe</label>
+          <select id="bio-vibe"><option>Fun & playful</option><option>Professional</option><option>Minimal & cool</option><option>Inspirational</option></select>
+        </div>
+      </div>
+      <button class="tips-toggle" onclick="toggleTips('bio-tips',this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Tips for a great bio
+        </button>
+        <div class="tips-box" id="bio-tips">
+          <div class="tips-list">
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>List your passions</strong> — mention 2-3 specific interests not just your job title</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Add an achievement</strong> — follower count, years of experience or notable accomplishment</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Include a CTA</strong> — what should visitors do? Watch, shop, follow, DM?</div></div>
+          </div>
+          <div class="tip-example"><strong>✦ Good example</strong>"Travel creator, coffee addict, sharing hidden gems in Europe — 50k followers, new video every Friday!"</div>
+        </div>
+        <button class="generate-btn gbtn-teal" id="bio-btn" onclick="genBio()">
+        <span class="spin" id="bio-spin"></span> Create my bio
+      </button>
+    </div>
+    <div class="output-panel">
+      <div class="out-empty" id="bio-empty">
+        <div class="out-empty-icon">👤</div>
+        <div class="out-empty-text">Your bio will appear here</div>
+      </div>
+      <div class="out-result" id="bio-result">
+        <div class="out-topbar">
+          <span class="out-label">Your bio</span>
+          <button class="copy-btn" id="bio-copy-btn" onclick="copyOut('bio-text','bio-copy-btn')">Copy</button>
+        </div>
+        <div class="out-text" id="bio-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO IDEAS TOOL -->
+  <div class="tool-panel" id="panel-ideas">
+    <div class="input-panel">
+      <div class="panel-title"><span>💡</span> Video Idea Generator</div>
+      <div class="form-row">
+        <div>
+          <label>Channel niche</label>
+          <input type="text" id="vid-niche" placeholder="e.g. European travel, fitness, AI tools">
+        </div>
+        <div>
+          <label>Target audience</label>
+          <input type="text" id="vid-aud" placeholder="e.g. young adults in USA, UK, Australia">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Platform</label>
+          <select id="vid-plat"><option>YouTube (long video)</option><option>YouTube Shorts</option><option>TikTok</option><option>Instagram Reels</option></select>
+        </div>
+        <div>
+          <label>Number of ideas</label>
+          <select id="vid-count"><option value="5">5 ideas</option><option value="10" selected>10 ideas</option><option value="15">15 ideas</option></select>
+        </div>
+      </div>
+      <label>Style (optional)</label>
+      <div class="toggle-group" id="vid-style">
+        <span class="toggle on amber" data-v="Trending & popular">🔥 Trending</span>
+        <span class="toggle amber" data-v="Educational">📚 Educational</span>
+        <span class="toggle amber" data-v="Entertaining">😄 Entertaining</span>
+        <span class="toggle amber" data-v="Inspirational">✨ Inspirational</span>
+      </div>
+      <button class="tips-toggle" onclick="toggleTips('vid-tips',this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Tips for viral video ideas
+        </button>
+        <div class="tips-box" id="vid-tips">
+          <div class="tips-list">
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Be specific with niche</strong> — "fitness for busy moms" beats "fitness"</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Define your audience</strong> — age, country and interests help tailor ideas</div></div>
+            <div class="tip-item"><div class="tip-dot"></div><div class="tip-text"><strong>Pick the right style</strong> — trending ideas get views fast, educational builds loyal audience</div></div>
+          </div>
+          <div class="tip-example"><strong>✦ Good example</strong>Niche: "budget travel Europe backpacker" — Audience: "college students USA aged 18-25"</div>
+        </div>
+        <button class="generate-btn gbtn-amber" id="vid-btn" onclick="genIdeas()">
+        <span class="spin" id="vid-spin"></span> Generate ideas
+      </button>
+    </div>
+    <div class="output-panel">
+      <div class="out-empty" id="vid-empty">
+        <div class="out-empty-icon">💡</div>
+        <div class="out-empty-text">Your video ideas will appear here</div>
+      </div>
+      <div class="out-result" id="vid-result">
+        <div class="out-topbar">
+          <span class="out-label">Your ideas</span>
+          <button class="copy-btn" id="vid-copy-btn" onclick="copyOut('vid-text','vid-copy-btn')">Copy all</button>
+        </div>
+        <div class="idea-list" id="vid-ideas"></div>
+        <div class="out-text" id="vid-text" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AD SLOT -->
+<div class="ad-slot"><ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4230227200458981"
+     data-ad-slot="auto"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+
+<!-- TESTIMONIALS -->
+<!-- FAQ -->
+<div class="faq-section" id="faq">
+  <div class="section-tag">FAQ</div>
+  <h2 class="section-title" style="margin-bottom:32px">Common questions</h2>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Is SocialToolkit completely free?</div>
+    <div class="faq-a">Yes! All 4 tools are 100% free to use with no account, no credit card, and no hidden fees. We keep the lights on with the small ads you see on the page.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Do you store my data?</div>
+    <div class="faq-a">We take your privacy seriously. Information you enter is used only to generate your results and is not sold to third parties. Please read our Privacy Policy for full details.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Which platforms do the tools support?</div>
+    <div class="faq-a">Our tools support Instagram, TikTok, YouTube, Facebook, Twitter/X, and LinkedIn. Each tool is optimized for the specific character limits and styles of each platform.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How many times can I use the tools?</div>
+    <div class="faq-a">There is no limit! You can use all tools as many times as you want, every day, completely free. Refresh and generate new results anytime.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I use this on my phone?</div>
+    <div class="faq-a">Absolutely! SocialToolkit is fully optimized for mobile phones and tablets. It works on all devices and browsers.</div>
+  </div>
+</div>
+
+<!-- CTA BANNER -->
+<div class="cta-banner">
+  <h2>Start creating better content today</h2>
+  <p>Free AI tools for every creator. No sign up required. No credit card needed.</p>
+  <a href="#tools" class="btn-hero btn-hero-primary">Try all tools free →</a>
+</div>
+
+<!-- AD SLOT -->
+<div class="ad-slot"><ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4230227200458981"
+     data-ad-slot="auto"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+
+<!-- FOOTER -->
+<!-- Recommended Tools / Affiliate Section -->
+<div class="affiliate-section">
+  <div class="affiliate-inner">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#818cf8;margin-bottom:10px">Recommended tools</div>
+    <div style="font-family:var(--fh);font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-1px;color:rgba(255,255,255,0.9);margin-bottom:6px">Tools we love for creators</div>
+    <p style="font-size:14px;color:rgba(255,255,255,0.38);margin-bottom:24px;font-weight:300">These tools work perfectly alongside SocialToolkit to help you grow faster.</p>
+    <div class="affiliate-grid">
+      <a class="affiliate-card" href="https://www.canva.com" target="_blank" rel="noopener">
+        <div class="affiliate-icon" style="background:rgba(219,39,119,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f9a8d4" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22c4.97 0 9-2.69 9-6s-4.03-6-9-6-9 2.69-9 6 4.03 6 9 6z"/></svg>
+        </div>
+        <div><div class="affiliate-name">Canva</div><div class="affiliate-desc">Design thumbnails, posts and graphics in minutes. Perfect for creators.</div></div>
+        <div class="affiliate-badge badge-free">Free plan</div>
+        <div class="affiliate-link">Try free <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+      </a>
+      <a class="affiliate-card" href="https://www.tubebuddy.com" target="_blank" rel="noopener">
+        <div class="affiliate-icon" style="background:rgba(245,158,11,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+        </div>
+        <div><div class="affiliate-name">TubeBuddy</div><div class="affiliate-desc">Grow your YouTube channel faster with SEO tools and analytics.</div></div>
+        <div class="affiliate-badge badge-free">Free plan</div>
+        <div class="affiliate-link">Try free <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+      </a>
+      <a class="affiliate-card" href="https://vidiq.com" target="_blank" rel="noopener">
+        <div class="affiliate-icon" style="background:rgba(99,102,241,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="#a5b4fc" stroke="none"/></svg>
+        </div>
+        <div><div class="affiliate-name">VidIQ</div><div class="affiliate-desc">Find trending topics and optimize your YouTube videos for more views.</div></div>
+        <div class="affiliate-badge badge-free">Free plan</div>
+        <div class="affiliate-link">Try free <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+      </a>
+      <a class="affiliate-card" href="https://www.capcut.com" target="_blank" rel="noopener">
+        <div class="affiliate-icon" style="background:rgba(16,185,129,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/><path d="M2 7h5"/><path d="M2 17h5"/><path d="M17 17h5"/><path d="M17 7h5"/></svg>
+        </div>
+        <div><div class="affiliate-name">CapCut</div><div class="affiliate-desc">Edit videos for TikTok, Instagram Reels and YouTube Shorts with AI.</div></div>
+        <div class="affiliate-badge badge-free">Free</div>
+        <div class="affiliate-link">Try free <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="logo" href="#" style="margin-bottom:0">
+          <div class="logo-mark"><svg width="36" height="36" viewBox="0 0 36 36" role="img" aria-label="SocialToolkit logo"><rect width="36" height="36" rx="9" fill="#0e0e16"/><rect x="7" y="21" width="5" height="9" rx="2" fill="#5b4fff"/><rect x="14" y="16" width="5" height="14" rx="2" fill="#7c6dff"/><rect x="21" y="10" width="5" height="20" rx="2" fill="#ff4f9b"/><circle cx="30" cy="8" r="5" fill="#00e5a0"/><text x="30" y="11" font-family="system-ui,sans-serif" font-size="5" font-weight="800" fill="#060610" text-anchor="middle">AI</text></svg></div> SocialToolkit
+        </a>
+        <p>Free AI-powered tools to help content creators save time and create better content.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Tools</div>
+        <div class="footer-links">
+          <a href="#" onclick="switchTabByName('hashtag')">Hashtag Generator</a>
+          <a href="#" onclick="switchTabByName('caption')">Caption Writer</a>
+          <a href="#" onclick="switchTabByName('bio')">Bio Maker</a>
+          <a href="#" onclick="switchTabByName('ideas')">Video Ideas</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Platforms</div>
+        <div class="footer-links">
+          <a href="#">Instagram Tools</a>
+          <a href="#">TikTok Tools</a>
+          <a href="#">YouTube Tools</a>
+          <a href="#">Facebook Tools</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-links">
+          <a href="about.html">About us</a>
+          <a href="privacy.html">Privacy policy</a>
+          <a href="terms.html">Terms of use</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 SocialToolkit. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Use</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const API_KEY="AIzaSyDQPOh6CteNOXqwGvHXZpJDGuZX2T5id2Q";
+const API="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="+API_KEY;
+
+async function ask(prompt){
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:1000,temperature:0.7}})});
+    const d=await r.json();
+    if(d.error)throw new Error("Google API Error: "+d.error.message+" (code:"+d.error.code+")");
+    const text=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
+    if(!text)throw new Error("No result returned. Please try again.");
+    return text;
+  }catch(e){
+    if(e.message.includes("Failed to fetch"))throw new Error("Network error - check your internet connection");
+    throw e;
+  }
+}
+
+function load(btnId,spinId,on){
+  document.getElementById(btnId).disabled=on;
+  document.getElementById(spinId).classList.toggle("v",on);
+}
+function showResult(emptyId,resultId){
+  document.getElementById(emptyId).style.display="none";
+  document.getElementById(resultId).classList.add("show");
+}
+
+/* TAB SWITCHING */
+function switchTab(name,btn){
+  document.querySelectorAll(".tool-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("panel-"+name).classList.add("active");
+  btn.classList.add("active");
+  document.getElementById("tools").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function switchTabByName(name){
+  const tabs=document.querySelectorAll(".tab-btn");
+  const names=["hashtag","caption","bio","ideas"];
+  const idx=names.indexOf(name);
+  if(idx>=0)switchTab(name,tabs[idx]);
+  document.getElementById("tools").scrollIntoView({behavior:"smooth"});
+  return false;
+}
+
+/* SINGLE SELECT TOGGLES */
+function bindToggle(groupId,cls){
+  document.getElementById(groupId).addEventListener("click",e=>{
+    const t=e.target.closest(".toggle");
+    if(!t)return;
+    document.querySelectorAll("#"+groupId+" .toggle").forEach(x=>x.classList.remove("on",cls));
+    t.classList.add("on");
+    if(cls)t.classList.add(cls);
+  });
+}
+function getToggle(groupId){
+  const s=document.querySelector("#"+groupId+" .toggle.on");
+  return s?s.dataset.v:"";
+}
+bindToggle("ht-plat","");
+bindToggle("cap-tone","pink");
+bindToggle("vid-style","amber");
+
+/* HASHTAGS */
+async function genHashtags(){
+  const topic=document.getElementById("ht-topic").value.trim();
+  if(!topic){alert("Please enter a topic!");return;}
+  const plat=getToggle("ht-plat")||"Instagram";
+  const count=document.getElementById("ht-count").value;
+  load("ht-btn","ht-spin",true);
+  try{
+    const res=await ask(`Generate exactly ${count} hashtags for a ${plat} post about: "${topic}". Return ONLY hashtags, one per line, each starting with #. No numbers, no text. Mix popular, medium, and niche tags.`);
+    const tags=res.split("\n").map(l=>l.trim()).filter(l=>l.startsWith("#"));
+    const container=document.getElementById("ht-tags");
+    container.innerHTML="";
+    let allTags="";
+    tags.forEach(tag=>{
+      allTags+=tag+" ";
+      const el=document.createElement("span");
+      el.className="htag";el.textContent=tag;
+      el.title="Click to copy";
+      el.onclick=()=>{
+        navigator.clipboard.writeText(tag);
+        el.classList.add("cp");
+        const orig=el.textContent;
+        el.textContent="✓";
+        setTimeout(()=>{el.textContent=orig;el.classList.remove("cp");},1200);
+      };
+      container.appendChild(el);
+    });
+    window._allTags=allTags.trim();
+    showResult("ht-empty","ht-result");
+  }catch(e){alert("Error: "+e.message);}
+  load("ht-btn","ht-spin",false);
+}
+function copyTags(){
+  navigator.clipboard.writeText(window._allTags||"");
+  const btn=document.getElementById("ht-copy-btn");
+  btn.textContent="✓ Copied!";btn.classList.add("done");
+  setTimeout(()=>{btn.textContent="Copy all";btn.classList.remove("done");},1800);
+}
+
+/* CAPTION */
+async function genCaption(){
+  const desc=document.getElementById("cap-desc").value.trim();
+  if(!desc){alert("Please describe your post!");return;}
+  const tone=getToggle("cap-tone")||"Inspirational";
+  const plat=document.getElementById("cap-plat").value;
+  const lenMap={short:"1-2 lines",medium:"3-5 lines",long:"7-10 lines story style"};
+  const len=lenMap[document.getElementById("cap-len").value];
+  load("cap-btn","cap-spin",true);
+  try{
+    const res=await ask(`Write a ${tone.toLowerCase()} ${plat} caption for: "${desc}". Length: ${len}. Include 2-3 emojis naturally. End with a call to action. Return ONLY the caption.`);
+    document.getElementById("cap-text").textContent=res.trim();
+    showResult("cap-empty","cap-result");
+  }catch(e){alert("Error: "+e.message);}
+  load("cap-btn","cap-spin",false);
+}
+
+/* BIO */
+async function genBio(){
+  const niche=document.getElementById("bio-niche").value.trim();
+  if(!niche){alert("Please enter what you do!");return;}
+  const name=document.getElementById("bio-name").value.trim();
+  const loc=document.getElementById("bio-loc").value.trim();
+  const about=document.getElementById("bio-about").value.trim();
+  const plat=document.getElementById("bio-plat").value;
+  const vibe=document.getElementById("bio-vibe").value;
+  load("bio-btn","bio-spin",true);
+  try{
+    const res=await ask(`Write a ${vibe.toLowerCase()} ${plat} bio. Name:${name||"not given"}. Niche:${niche}. Location:${loc||"not given"}. About:${about||"not given"}. Keep under 150 chars for IG/TikTok. Use 2-3 emojis. Use line breaks. Add CTA if IG or TikTok. Return ONLY the bio.`);
+    document.getElementById("bio-text").textContent=res.trim();
+    showResult("bio-empty","bio-result");
+  }catch(e){alert("Error: "+e.message);}
+  load("bio-btn","bio-spin",false);
+}
+
+/* VIDEO IDEAS */
+async function genIdeas(){
+  const niche=document.getElementById("vid-niche").value.trim();
+  if(!niche){alert("Please enter your niche!");return;}
+  const aud=document.getElementById("vid-aud").value.trim();
+  const plat=document.getElementById("vid-plat").value;
+  const count=document.getElementById("vid-count").value;
+  const style=getToggle("vid-style")||"Trending & popular";
+  load("vid-btn","vid-spin",true);
+  try{
+    const res=await ask(`Generate exactly ${count} ${style.toLowerCase()} ${plat} video ideas for a "${niche}" creator targeting "${aud||"general audience"}".
+
+Format each idea EXACTLY like this with a number, title and description on separate lines:
+1. Title of video idea here
+Description of the video concept in one sentence here.
+
+2. Another title here
+Another description here.
+
+Do NOT use JSON. Do NOT use brackets. Just plain numbered list.`);
+
+    const container=document.getElementById("vid-ideas");
+    container.innerHTML="";
+    let allText="";
+    
+    // Parse numbered list format
+    const lines=res.split("\n").map(l=>l.trim()).filter(l=>l.length>0);
+    let ideas=[];
+    let currentIdea=null;
+    
+    lines.forEach(line=>{
+      const numMatch=line.match(/^(\d+)[\.\)\:]\s*(.+)/);
+      if(numMatch){
+        if(currentIdea)ideas.push(currentIdea);
+        currentIdea={title:numMatch[2],desc:""};
+      } else if(currentIdea && !line.match(/^\d+[\.\)]/)){
+        currentIdea.desc=line;
+      }
+    });
+    if(currentIdea)ideas.push(currentIdea);
+
+    if(ideas.length===0){
+      // fallback — split by double newline
+      ideas=res.split("\n\n").filter(b=>b.trim()).map((block,i)=>{
+        const ls=block.split("\n").filter(l=>l.trim());
+        return{title:ls[0]?.replace(/^\d+[\.\)\:]\s*/,"")||`Idea ${i+1}`,desc:ls[1]||""};
+      });
+    }
+
+    ideas.forEach((idea,i)=>{
+      allText+=`${i+1}. ${idea.title}\n${idea.desc}\n\n`;
+      const el=document.createElement("div");
+      el.className="idea-item";
+      el.innerHTML=`<div class="idea-title">${i+1}. ${idea.title}</div>${idea.desc?`<div class="idea-desc">${idea.desc}</div>`:""}`;
+      container.appendChild(el);
+    });
+    
+    document.getElementById("vid-text").textContent=allText.trim();
+    showResult("vid-empty","vid-result");
+  }catch(e){alert("Error: "+e.message);}
+  load("vid-btn","vid-spin",false);
+}
+
+function copyOut(textId,btnId){
+  const text=document.getElementById(textId).textContent;
+  navigator.clipboard.writeText(text);
+  const btn=document.getElementById(btnId);
+  btn.textContent="✓ Copied!";btn.classList.add("done");
+  setTimeout(()=>{btn.textContent="Copy";btn.classList.remove("done");},1800);
+}
+
+/* FAQ */
+function toggleFaq(q){
+  q.closest(".faq-item").classList.toggle("open");
+}
+
+/* SMOOTH SCROLL for anchor links */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener("click",e=>{
+    const target=document.querySelector(a.getAttribute("href"));
+    if(target){e.preventDefault();target.scrollIntoView({behavior:"smooth",block:"start"});}
+  });
+});
+
+/* ═══ COOKIE CONSENT ═══ */
+function acceptCookies(){
+  localStorage.setItem('st_cookies','accepted');
+  const b=document.getElementById('cookie-banner');
+  if(b)b.classList.add('hidden');
+  if(typeof gtag!=='undefined')gtag('consent','update',{'analytics_storage':'granted','ad_storage':'granted'});
+}
+function declineCookies(){
+  localStorage.setItem('st_cookies','declined');
+  const b=document.getElementById('cookie-banner');
+  if(b)b.classList.add('hidden');
+}
+(function(){
+  if(localStorage.getItem('st_cookies')){
+    const b=document.getElementById('cookie-banner');
+    if(b)b.classList.add('hidden');
+  }
+})();
+
+/* ═══ TIPS TOGGLE ═══ */
+function toggleTips(id,btn){
+  const box=document.getElementById(id);
+  if(!box)return;
+  box.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+
+/* ═══ CHARACTER COUNTER ═══ */
+function addCharCounter(inputId,limit){
+  const el=document.getElementById(inputId);
+  if(!el)return;
+  const counter=document.createElement('div');
+  counter.className='char-counter';
+  counter.textContent='0 / '+limit;
+  el.parentNode.insertBefore(counter,el.nextSibling);
+  el.addEventListener('input',function(){
+    const len=el.value.length;
+    counter.textContent=len+' / '+limit;
+    counter.className='char-counter'+(len>limit*0.9?' warn':'')+(len>limit?' over':'');
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){
+  addCharCounter('cap-desc',2200);
+  addCharCounter('bio-about',150);
+});
+
+</script>
+</body>
+</html>

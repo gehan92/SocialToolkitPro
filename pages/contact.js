@@ -1,0 +1,136 @@
+import Head from "next/head";
+import Script from "next/script";
+
+const CSS = `
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06060a;--card:#13131e;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
+  --text:#eeedf5;--text2:#9998b0;--text3:#5f5e74;
+  --a1:#5b4fff;--a1l:#7c6dff;--a3:#00e5a0;
+  --fh:'Clash Display',sans-serif;--fb:'Cabinet Grotesk',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.75;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+nav{position:sticky;top:0;z-index:100;background:rgba(6,6,10,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px}
+.nav-wrap{max-width:800px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px}
+.nav-back{font-size:13px;color:var(--text2);text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:var(--text)}
+.wrap{max-width:700px;margin:0 auto;padding:60px 28px 80px;position:relative;z-index:1}
+.page-tag{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--a1l);margin-bottom:12px}
+h1{font-family:var(--fh);font-size:clamp(32px,5vw,48px);font-weight:700;letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px}
+.sub{font-size:16px;color:var(--text2);margin-bottom:48px;font-weight:300}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center}
+.contact-icon{font-size:28px;margin-bottom:12px}
+.contact-title{font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:6px}
+.contact-detail{font-size:13px;color:var(--text2)}
+.contact-detail a{color:var(--a1l);text-decoration:none}
+.contact-detail a:hover{text-decoration:underline}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px}
+.form-title{font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:24px}
+label{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px}
+input,textarea,select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--fb);font-size:14px;padding:12px 14px;outline:none;transition:border-color 0.2s;margin-bottom:16px;resize:none;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239998b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer}
+select option{background:#13131e;color:#eeedf5}
+input:focus,textarea:focus,select:focus{border-color:var(--a1)}
+textarea{min-height:120px}
+.submit-btn{width:100%;background:var(--a1);color:#fff;font-family:var(--fh);font-size:14px;font-weight:700;padding:14px;border-radius:10px;border:none;cursor:pointer;transition:all 0.2s;letter-spacing:-0.2px}
+.submit-btn:hover{background:var(--a1l);transform:translateY(-1px)}
+.success-msg{display:none;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);border-radius:10px;padding:16px;text-align:center;color:var(--a3);font-size:14px;margin-top:16px}
+.error-msg{display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:16px;text-align:center;color:#fca5a5;font-size:14px;margin-top:16px}
+.submit-btn.loading{opacity:0.65;cursor:not-allowed;pointer-events:none}
+.btn-spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{border-top:1px solid var(--border);padding:28px;text-align:center;color:var(--text3);font-size:13px;position:relative;z-index:1}
+footer a{color:var(--text3);text-decoration:none;margin:0 10px}
+footer a:hover{color:var(--text2)}
+@media(max-width:560px){.contact-grid{grid-template-columns:1fr}.wrap{padding:40px 16px 60px}.form-card{padding:24px 20px}}
+`;
+
+export default function Contact() {
+  return (
+    <>
+      <Head>
+        <title>Contact Us — SocialToolkit</title>
+        <meta name="description" content="Contact SocialToolkit — get in touch with our team." />
+        <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      </Head>
+      <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4230227200458981" crossOrigin="anonymous" strategy="afterInteractive" />
+
+      <nav>
+        <div className="nav-wrap">
+          <a className="logo" href="/">
+            <svg width="28" height="28" viewBox="0 0 36 36"><rect width="36" height="36" rx="9" fill="#0e0e16"/><rect x="7" y="21" width="5" height="9" rx="2" fill="#5b4fff"/><rect x="14" y="16" width="5" height="14" rx="2" fill="#7c6dff"/><rect x="21" y="10" width="5" height="20" rx="2" fill="#ff4f9b"/><circle cx="30" cy="8" r="5" fill="#00e5a0"/></svg>
+            SocialToolkit
+          </a>
+          <a className="nav-back" href="/">← Back to home</a>
+        </div>
+      </nav>
+
+      <div className="wrap">
+        <div className="page-tag">Get in touch</div>
+        <h1>Contact Us</h1>
+        <p className="sub">Have a question, suggestion, or feedback? We&apos;d love to hear from you. We usually reply within 1–2 business days.</p>
+
+        <div className="contact-grid">
+          <div className="contact-card">
+            <div className="contact-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--a1l)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div className="contact-title">Email us</div>
+            <div className="contact-detail"><a href="mailto:socialaikit@gmail.com">socialaikit@gmail.com</a></div>
+          </div>
+          <div className="contact-card">
+            <div className="contact-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--a1l)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div className="contact-title">Privacy issues</div>
+            <div className="contact-detail"><a href="mailto:socialaikit@gmail.com">socialaikit@gmail.com</a></div>
+          </div>
+        </div>
+
+        <div className="form-card">
+          <div className="form-title">Send us a message</div>
+          <label>Your name</label>
+          <input type="text" id="name" placeholder="e.g. Alex Johnson" />
+          <label>Your email address</label>
+          <input type="email" id="email" placeholder="e.g. alex@gmail.com" />
+          <label>Subject</label>
+          <select id="subject">
+            <option value="General question">General question</option>
+            <option value="Tool not working">Tool not working</option>
+            <option value="Suggest a new tool">Suggest a new tool</option>
+            <option value="Advertising or sponsorship">Advertising or sponsorship</option>
+            <option value="Privacy concern">Privacy concern</option>
+            <option value="Partnership opportunity">Partnership opportunity</option>
+            <option value="Other">Other</option>
+          </select>
+          <label>Your message</label>
+          <textarea id="message" placeholder="Write your message here..."></textarea>
+          <input type="checkbox" name="botcheck" style={{ display: "none" }} />
+          <button className="submit-btn" id="submit-btn" onClick={() => window.submitForm && window.submitForm()}>
+            Send message →
+          </button>
+          <div className="success-msg" id="success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 6 }}><polyline points="20 6 9 17 4 12"/></svg>
+            Thank you! Your message has been received. We will reply within 1–2 business days.
+          </div>
+          <div className="error-msg" id="error-msg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 6 }}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Something went wrong. Please email us directly at <a href="mailto:socialaikit@gmail.com" style={{ color: "#fca5a5" }}>socialaikit@gmail.com</a>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div style={{ marginBottom: 8 }}>© 2026 SocialToolkit. All rights reserved.</div>
+        <div>
+          <a href="/">Home</a>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Use</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </footer>
+
+      <Script src="/js/contact.js" strategy="afterInteractive" />
+    </>
+  );
+}
