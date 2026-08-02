@@ -16,7 +16,8 @@ This folder contains **5 comprehensive documents** covering every aspect of Soci
 ├─ 2_DEVELOPMENT_TECHNICAL_ROADMAP.md
 ├─ 3_PRICING_STRATEGY.md
 ├─ 4_FEATURES_PRODUCT_ROADMAP.md
-└─ 5_MARKETING_GO_TO_MARKET_STRATEGY.md
+├─ 5_MARKETING_GO_TO_MARKET_STRATEGY.md
+└─ 6_SCALING_RELIABILITY_NOTES.md (added post-launch, Aug 2026)
 ```
 
 ---
@@ -193,6 +194,21 @@ This folder contains **5 comprehensive documents** covering every aspect of Soci
 - Top 10 ProductHunt ranking
 - 5-10 Premium customers
 - 50+ ProductHunt upvotes
+
+---
+
+### 6. Scaling & Reliability Notes (20 min read)
+**File:** `6_SCALING_RELIABILITY_NOTES.md`
+
+**Contains:**
+- The Gemini API free-tier quota issue (20 requests/day, project-wide) found during live testing
+- Confirmed-and-fixed AI output truncation bugs
+- 6 simple scenario walkthroughs of what breaks and why, with fixes
+- Priority order for addressing each
+
+**Use this for:** Understanding production reliability risks with the AI provider before/while scaling real usage
+
+**Key action:** Enable billing on the Gemini API project — this is currently the #1 blocker to relying on the app under real traffic.
 
 ---
 
