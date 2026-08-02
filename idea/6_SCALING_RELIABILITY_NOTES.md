@@ -139,6 +139,20 @@ The admin dashboard currently *assumes* $0.001 per generation for the Gemini cos
 
 ---
 
+## 🌐 Custom Domain — What Actually Looks "Unprofessional" (And a Real Bug Found Alongside It)
+
+Question raised: is `https://social-toolkit-pro.vercel.app/#faq` unprofessional?
+
+**The `#faq` part is fine** — it's a normal anchor link (jump to a section on the page), used by nearly every professional marketing site. Not something to fix.
+
+**The actual issue is `.vercel.app`** — that's Vercel's free default address, and it reads as "side project" to visitors the same way `@gmail.com` reads as not-a-real-company email. The fix: buy a real domain (~$10-15/year) and connect it under Vercel → Settings → Domains. About 10 minutes once the domain is purchased.
+
+**Bug found while checking this:** `pages/api/subscription/checkout.js` builds the Stripe success/cancel redirect URL from the `NEXT_PUBLIC_URL` environment variable. Locally (`.env.local`) it's set to `http://localhost:3001` — fine for local testing, but **`.env.local` never reaches production; Vercel uses its own separate environment variable settings.** If `NEXT_PUBLIC_URL` isn't explicitly set to the real live URL inside Vercel's dashboard (Settings → Environment Variables), a real paying customer would get redirected to `localhost:3001` — unreachable for them — immediately after completing a real payment. This is a functional risk, not just a look/feel issue, and should be checked before relying on real checkouts.
+
+**Status:** Not implemented — domain purchase/connection and the `NEXT_PUBLIC_URL` production check are both owner actions (Vercel dashboard / domain registrar), not code changes.
+
+---
+
 ## 📋 Priority Order
 
 | # | Item | Effort | When |
@@ -149,6 +163,8 @@ The admin dashboard currently *assumes* $0.001 per generation for the Gemini cos
 | 2 | Budget alert/cap in Google Cloud | Small (Google console) | Right after #1 |
 | 4 | Usage warning banner in admin dashboard | Small–medium (code) | When convenient |
 | 7 | Fair-use daily cap on Premium/Pro (still "unlimited" to customers) | Small–medium (code) | Before real paid traffic grows |
+| 8 | Confirm `NEXT_PUBLIC_URL` is set correctly in Vercel's production env vars (not localhost) | A few minutes (Vercel dashboard) | **Now — blocks real checkouts** |
+| 9 | Buy + connect a custom domain | Small (registrar + Vercel dashboard) | Before real marketing push |
 | 6 | Backup AI provider | Large | Later — only if it becomes a real problem |
 
 ---
