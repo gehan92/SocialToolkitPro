@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
   const rl = await checkRateLimit(req, "caption");
   if (!rl.allowed) {
-    return res.status(429).json({ success: false, error: "Daily free limit reached. Upgrade to Premium for unlimited generations." });
+    return res.status(429).json({ success: false, error: "Daily free limit reached. Upgrade to Premium for unlimited generations.", resetAt: rl.resetAt });
   }
 
   const plat = platform || "Instagram";

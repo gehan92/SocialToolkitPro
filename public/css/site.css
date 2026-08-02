@@ -400,6 +400,20 @@ footer{
 .cookie-decline{background:transparent;color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.12);padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.15s;font-family:var(--fb)}
 .cookie-decline:hover{color:rgba(255,255,255,0.65)}
 
+/* ── DAILY LIMIT REACHED MODAL ── */
+.limit-modal-backdrop{position:fixed;inset:0;background:rgba(4,4,10,0.7);backdrop-filter:blur(4px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;animation:stFadeIn 0.2s ease}
+@keyframes stFadeIn{from{opacity:0}to{opacity:1}}
+.limit-modal{background:rgba(14,14,24,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:28px 26px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6);text-align:center;animation:stSlideUp 0.3s ease}
+.limit-modal-icon{font-size:34px;margin-bottom:10px}
+.limit-modal-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;font-family:var(--fh)}
+.limit-modal-text{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.limit-modal-reset{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:22px}
+.limit-modal-btns{display:flex;flex-direction:column;gap:10px}
+.limit-modal-upgrade{background:linear-gradient(135deg,#4f46e5,#db2777);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:block;font-family:var(--fh)}
+.limit-modal-upgrade:hover{opacity:0.9}
+.limit-modal-close{background:transparent;color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.12);padding:10px 20px;border-radius:10px;font-size:13px;cursor:pointer;font-family:var(--fb)}
+.limit-modal-close:hover{color:rgba(255,255,255,0.65)}
+
 /* ── MULTILINGUAL HINT ── */
 .ml-hint{background:rgba(79,70,229,0.1);border:1px solid rgba(79,70,229,0.25);border-radius:8px;padding:10px 14px;font-size:12px;color:#a5b4fc;display:flex;align-items:center;gap:8px;margin-bottom:14px;font-weight:500;line-height:1.5}
 

@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   const rl = await checkRateLimit(req, "youtube-desc");
   if (!rl.allowed) {
-    return res.status(429).json({ success: false, error: "Daily limit reached." });
+    return res.status(429).json({ success: false, error: "Daily limit reached.", resetAt: rl.resetAt });
   }
 
   const kw = keywords ? ` Primary keywords to include: ${keywords}.` : "";

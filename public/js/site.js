@@ -10,12 +10,60 @@ async function callApi(endpoint, payload) {
       body: JSON.stringify(payload),
     });
     const d = await r.json();
-    if (!d.success) throw new Error(d.error || "Generation failed. Please try again.");
+    if (!d.success) {
+      if (r.status === 429) {
+        showLimitReachedModal(d.resetAt);
+        const err = new Error(d.error || "Daily limit reached");
+        err.handled = true;
+        throw err;
+      }
+      throw new Error(d.error || "Generation failed. Please try again.");
+    }
     return d.data;
   } catch (e) {
     if (e.message.includes("Failed to fetch")) throw new Error("Network error - check your internet connection");
     throw e;
   }
+}
+
+/* Daily free-limit reached — a proper modal instead of a raw alert().
+   Shows a reset time and an upgrade nudge, but never the exact free-generation count. */
+function formatResetIn(resetAt) {
+  const diffMs = new Date(resetAt) - new Date();
+  if (!resetAt || diffMs <= 0) return "shortly";
+  const totalMins = Math.ceil(diffMs / 60000);
+  const hours = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+  if (hours > 0 && mins > 0) return hours + "h " + mins + "m";
+  if (hours > 0) return hours + "h";
+  return mins + "m";
+}
+
+function showLimitReachedModal(resetAt) {
+  const existing = document.getElementById("limit-modal-backdrop");
+  if (existing) existing.remove();
+
+  const backdrop = document.createElement("div");
+  backdrop.id = "limit-modal-backdrop";
+  backdrop.className = "limit-modal-backdrop";
+  backdrop.onclick = (e) => {
+    if (e.target === backdrop) backdrop.remove();
+  };
+
+  backdrop.innerHTML =
+    '<div class="limit-modal">' +
+      '<div class="limit-modal-icon">⏳</div>' +
+      '<div class="limit-modal-title">You\'ve used today\'s free generations</div>' +
+      '<div class="limit-modal-text">Come back after it resets, or upgrade now for unlimited generations.</div>' +
+      '<div class="limit-modal-reset">Resets in ' + formatResetIn(resetAt) + '</div>' +
+      '<div class="limit-modal-btns">' +
+        '<a href="/account" class="limit-modal-upgrade">Upgrade to Premium</a>' +
+        '<button type="button" class="limit-modal-close">Maybe later</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(backdrop);
+  backdrop.querySelector(".limit-modal-close").onclick = () => backdrop.remove();
 }
 
 function load(btnId, spinId, on) {
@@ -138,7 +186,7 @@ async function genHashtags() {
     window._allTags = allTags.trim();
     showResult("ht-empty", "ht-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("ht-btn", "ht-spin", false);
 }
@@ -171,7 +219,7 @@ async function genCaption() {
     document.getElementById("cap-text").textContent = res.trim();
     showResult("cap-empty", "cap-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("cap-btn", "cap-spin", false);
 }
@@ -195,7 +243,7 @@ async function genBio() {
     document.getElementById("bio-text").textContent = res.trim();
     showResult("bio-empty", "bio-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("bio-btn", "bio-spin", false);
 }
@@ -258,7 +306,7 @@ async function genIdeas() {
     document.getElementById("vid-text").textContent = allText.trim();
     showResult("vid-empty", "vid-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("vid-btn", "vid-spin", false);
 }
@@ -356,7 +404,7 @@ async function genVariations(type, btnId) {
     });
     showResult(emptyId, resultId);
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load(btnId, spinId, false);
 }
@@ -394,7 +442,7 @@ async function saveOutput(type, btnId) {
     }, 1800);
     void result;
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
     btn.textContent = original;
     btn.disabled = false;
   }
@@ -669,7 +717,7 @@ async function saveTemplate(type) {
     }
     loadTemplatesIntoSelect(type);
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
 }
 
@@ -689,7 +737,7 @@ async function deleteTemplate(type) {
     });
     loadTemplatesIntoSelect(type);
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
 }
 
@@ -811,7 +859,7 @@ async function genThread() {
     });
     showResult("thr-empty", "thr-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("thr-btn", "thr-spin", false);
 }
@@ -832,7 +880,7 @@ async function genSeoIntro() {
     document.getElementById("seo-text").textContent = res;
     showResult("seo-empty", "seo-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("seo-btn", "seo-spin", false);
 }
@@ -854,7 +902,7 @@ async function genRepurpose() {
     renderSections(res, "rp-versions", "rp-text");
     showResult("rp-empty", "rp-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("rp-btn", "rp-spin", false);
 }
@@ -874,7 +922,7 @@ async function genYoutubeDesc() {
     document.getElementById("yt-text").textContent = res;
     showResult("yt-empty", "yt-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("yt-btn", "yt-spin", false);
 }
@@ -894,7 +942,7 @@ async function genEmailSubject() {
     renderNumberedList(res, "es-lines", "es-text");
     showResult("es-empty", "es-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("es-btn", "es-spin", false);
 }
@@ -915,7 +963,7 @@ async function genCta() {
     renderNumberedList(res, "cta-lines", "cta-text");
     showResult("cta-empty", "cta-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("cta-btn", "cta-spin", false);
 }
@@ -958,7 +1006,7 @@ async function genAdCopy() {
     });
     showResult("ad-empty", "ad-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("ad-btn", "ad-spin", false);
 }
@@ -979,7 +1027,7 @@ async function genViralHook() {
     renderNumberedList(res, "vh-hooks", "vh-text");
     showResult("vh-empty", "vh-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("vh-btn", "vh-spin", false);
 }
@@ -999,7 +1047,7 @@ async function genTechWriting() {
     document.getElementById("tw-text").textContent = res;
     showResult("tw-empty", "tw-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("tw-btn", "tw-spin", false);
 }
@@ -1022,7 +1070,7 @@ async function genPitch() {
     document.getElementById("pt-text").textContent = res;
     showResult("pt-empty", "pt-result");
   } catch (e) {
-    alert("Error: " + e.message);
+    if (!e.handled) alert("Error: " + e.message);
   }
   load("pt-btn", "pt-spin", false);
 }

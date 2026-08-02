@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   const rl = await checkRateLimit(req, "repurpose");
   if (!rl.allowed) {
-    return res.status(429).json({ success: false, error: "Daily limit reached." });
+    return res.status(429).json({ success: false, error: "Daily limit reached.", resetAt: rl.resetAt });
   }
 
   const source = sourcePlatform || "Instagram";
