@@ -118,6 +118,14 @@ create table if not exists contact_messages (
 
 create index if not exists idx_contact_messages_created on contact_messages(created_at desc);
 
+-- Admin-entered settings (e.g. fixed monthly hosting costs for the profit
+-- calculation) that can't be pulled from any API and must be typed in once.
+create table if not exists admin_settings (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamp default current_timestamp
+);
+
 -- Row Level Security: our backend talks to these tables via the service_role key
 -- (which always bypasses RLS), but this locks them down for any future client-side
 -- access using the publishable/anon key - users can only see their own rows.
@@ -129,8 +137,9 @@ alter table api_usage_logs enable row level security;
 alter table content_calendar enable row level security;
 alter table templates enable row level security;
 alter table contact_messages enable row level security;
--- No public policies for contact_messages: only the backend (service_role key,
--- which bypasses RLS) reads/writes it, via the admin dashboard and /api/contact.
+alter table admin_settings enable row level security;
+-- No public policies for contact_messages/admin_settings: only the backend
+-- (service_role key, which bypasses RLS) reads/writes them.
 
 create policy "Users can view their own profile" on profiles
   for select using (auth.uid() = id);

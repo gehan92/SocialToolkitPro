@@ -35,16 +35,22 @@ export default async function handler(req, res) {
     { data: logs },
     { count: messageCount },
     { data: dailyUsage },
+    { data: subscriptions },
+    { data: settingsRow },
   ] = await Promise.all([
     supabaseAdmin.from("profiles").select("subscription_tier, created_at"),
-    supabaseAdmin.from("api_usage_logs").select("endpoint, created_at, tokens_used"),
+    supabaseAdmin.from("api_usage_logs").select("endpoint, created_at, tokens_used, status_code, user_id"),
     supabaseAdmin.from("contact_messages").select("id", { count: "exact", head: true }),
-    supabaseAdmin.from("daily_usage").select("generations_count, usage_date"),
+    supabaseAdmin.from("daily_usage").select("user_id, generations_count, usage_date"),
+    supabaseAdmin.from("subscriptions").select("status, created_at, updated_at"),
+    supabaseAdmin.from("admin_settings").select("value").eq("key", "fixed_monthly_costs").maybeSingle(),
   ]);
 
   const allProfiles = profiles || [];
   const allLogs = logs || [];
   const allUsage = dailyUsage || [];
+  const allSubscriptions = subscriptions || [];
+  const fixedCosts = settingsRow?.value || { vercel: 0, supabase: 0, other: 0 };
 
   // Tier breakdown
   const tierBreakdown = { free: 0, premium: 0, pro: 0 };
@@ -102,21 +108,91 @@ export default async function handler(req, res) {
     });
   }
 
+  // New users per month for last 6 months
+  const usersByMonth = [];
+  for (let i = 5; i >= 0; i--) {
+    const mStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const mEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    usersByMonth.push({
+      month: mStart.toLocaleDateString("en-US", { month: "short", year: "2-digit" }),
+      count: allProfiles.filter((p) => {
+        const d = new Date(p.created_at);
+        return d >= mStart && d < mEnd;
+      }).length,
+    });
+  }
+
+  // Active vs inactive users: generated something in the last 30 days
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const activeUserIds = new Set(
+    allUsage
+      .filter((u) => new Date(u.usage_date) >= thirtyDaysAgo && u.generations_count > 0)
+      .map((u) => u.user_id)
+  );
+  const activeUsers = activeUserIds.size;
+  const inactiveUsers = Math.max(allProfiles.length - activeUsers, 0);
+
+  // Plan changes: new paid subscriptions vs cancellations this month
+  const newPaidSubsThisMonth = allSubscriptions.filter(
+    (s) => s.status === "active" && new Date(s.created_at) >= monthStart
+  ).length;
+  const canceledThisMonth = allSubscriptions.filter(
+    (s) => s.status === "canceled" && new Date(s.updated_at) >= monthStart
+  ).length;
+  const newUsersThisMonthCount = allProfiles.filter((p) => new Date(p.created_at) >= monthStart).length;
+  const conversionRate = newUsersThisMonthCount > 0
+    ? Math.round((newPaidSubsThisMonth / newUsersThisMonthCount) * 100)
+    : 0;
+
+  // Rate-limit hits: how often free users hit their daily cap (upgrade signal)
+  const rateLimitHits = allLogs.filter((l) => l.status_code === 429);
+  const rateLimitHitsThisWeek = rateLimitHits.filter((l) => new Date(l.created_at) >= weekStart).length;
+  const rateLimitHitsThisMonth = rateLimitHits.filter((l) => new Date(l.created_at) >= monthStart).length;
+  const hitsByUser = {};
+  rateLimitHits.forEach((l) => {
+    if (!l.user_id) return;
+    hitsByUser[l.user_id] = (hitsByUser[l.user_id] || 0) + 1;
+  });
+  const topRateLimitUsers = Object.entries(hitsByUser)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([userId, count]) => ({ userId, count }));
+
+  // True profit after fixed hosting costs (Vercel/Supabase plans, entered manually
+  // in Settings since these aren't available from any API).
+  const fixedCostsTotal = (fixedCosts.vercel || 0) + (fixedCosts.supabase || 0) + (fixedCosts.other || 0);
+  const trueNetProfit = netProfit - fixedCostsTotal;
+
   return res.status(200).json({
     success: true,
     data: {
       // Users
       totalUsers: allProfiles.length,
       newUsersThisWeek: allProfiles.filter((p) => new Date(p.created_at) >= weekStart).length,
-      newUsersThisMonth: allProfiles.filter((p) => new Date(p.created_at) >= monthStart).length,
+      newUsersThisMonth: newUsersThisMonthCount,
+      activeUsers,
+      inactiveUsers,
       tierBreakdown,
       usersByWeek,
+      usersByMonth,
       // Generations
       totalGenerations: allLogs.length,
       generationsThisMonth: logsThisMonth.length,
       generationsThisWeek: allLogs.filter((l) => new Date(l.created_at) >= weekStart).length,
       toolCounts,
       last30Days: last30,
+      // Rate-limit hits (free users hitting their daily cap)
+      rateLimitHits: {
+        thisWeek: rateLimitHitsThisWeek,
+        thisMonth: rateLimitHitsThisMonth,
+        topUsers: topRateLimitUsers,
+      },
+      // Plan changes
+      planChanges: {
+        newPaidSubsThisMonth,
+        canceledThisMonth,
+        conversionRate,
+      },
       // Revenue & costs
       revenue: {
         premium: premiumRevenue,
@@ -125,6 +201,9 @@ export default async function handler(req, res) {
         stripeFees: parseFloat(stripeFees.toFixed(2)),
         geminiCost: parseFloat(geminiCost.toFixed(2)),
         net: parseFloat(netProfit.toFixed(2)),
+        fixedCosts,
+        fixedCostsTotal: parseFloat(fixedCostsTotal.toFixed(2)),
+        trueNet: parseFloat(trueNetProfit.toFixed(2)),
       },
       messageCount: messageCount || 0,
     },

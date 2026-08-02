@@ -48,7 +48,8 @@ export default async function handler(req, res) {
           stripe_subscription_id: subscriptionId,
           stripe_customer_id: customerId,
           status: "active",
-        });
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "stripe_subscription_id" });
 
         // Update the user's profile: tier + customer ID
         // Match by customer email (Stripe session has customer_email)
@@ -83,7 +84,9 @@ export default async function handler(req, res) {
           stripe_subscription_id: subscription.id,
           stripe_customer_id: subscription.customer,
           status: subscription.status,
-        });
+          price_id: priceId,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "stripe_subscription_id" });
 
         // Update profile tier by stripe_customer_id
         await supabaseAdmin.from("profiles").update({
@@ -101,7 +104,8 @@ export default async function handler(req, res) {
           stripe_subscription_id: subscription.id,
           stripe_customer_id: subscription.customer,
           status: "canceled",
-        });
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "stripe_subscription_id" });
 
         // Revert user to free tier
         await supabaseAdmin.from("profiles").update({

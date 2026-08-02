@@ -78,9 +78,23 @@ const CSS = `
 
 /* ── PROFIT MARGIN ── */
 .margin-badge{display:inline-block;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:700;background:rgba(0,229,160,0.12);color:var(--a3)}
+
+/* ── STATUS PILL (subscriptions) ── */
+.status-pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.status-pill.active{background:rgba(0,229,160,0.15);color:var(--a3)}
+.status-pill.past_due{background:rgba(245,158,11,0.15);color:#f59e0b}
+.status-pill.canceled{background:rgba(239,68,68,0.15);color:#ef4444}
+.status-pill.trialing{background:rgba(91,79,255,0.15);color:#a097ff}
+
+/* ── SETTINGS FORM (fixed costs) ── */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:14px}
+.settings-field label{display:block;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.settings-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;box-sizing:border-box}
+.settings-save-btn{font-family:var(--fh);font-size:12px;font-weight:600;padding:8px 16px;border-radius:10px;border:none;cursor:pointer;background:var(--a1);color:#fff}
+.settings-save-btn:disabled{opacity:0.6;cursor:default}
 `;
 
-const TABS = ["Overview", "Revenue", "Users", "Analytics", "Messages"];
+const TABS = ["Overview", "Revenue", "Payments", "Users", "Analytics", "Messages"];
 
 export default function Admin() {
   const router = useRouter();
@@ -88,9 +102,13 @@ export default function Admin() {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState(null);
   const [messages, setMessages] = useState(null);
+  const [subscriptions, setSubscriptions] = useState(null);
+  const [subSummary, setSubSummary] = useState(null);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("Overview");
   const [savingTier, setSavingTier] = useState(null);
+  const [costsForm, setCostsForm] = useState({ vercel: "", supabase: "", other: "" });
+  const [savingCosts, setSavingCosts] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -100,15 +118,20 @@ export default function Admin() {
     if (!supabase) return;
     const { data: { session } } = await supabase.auth.getSession();
     const headers = { Authorization: `Bearer ${session?.access_token}` };
-    const [statsRes, usersRes, messagesRes] = await Promise.all([
+    const [statsRes, usersRes, messagesRes, subsRes] = await Promise.all([
       fetch("/api/admin/stats", { headers }).then((r) => r.json()),
       fetch("/api/admin/users", { headers }).then((r) => r.json()),
       fetch("/api/admin/messages", { headers }).then((r) => r.json()),
+      fetch("/api/admin/subscriptions", { headers }).then((r) => r.json()),
     ]);
     if (!statsRes.success) { setError(statsRes.error); return; }
     setStats(statsRes.data);
     setUsers(usersRes.data || []);
     setMessages(messagesRes.data || []);
+    setSubscriptions(subsRes.data || []);
+    setSubSummary(subsRes.summary || null);
+    const fc = statsRes.data?.revenue?.fixedCosts || { vercel: 0, supabase: 0, other: 0 };
+    setCostsForm({ vercel: String(fc.vercel || ""), supabase: String(fc.supabase || ""), other: String(fc.other || "") });
   }
 
   useEffect(() => { if (user) loadAll(); }, [user]);
@@ -125,6 +148,20 @@ export default function Admin() {
     setSavingTier(null);
     if (!d.success) { alert(d.error); return; }
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, subscription_tier: tier } : u));
+  }
+
+  async function saveFixedCosts() {
+    setSavingCosts(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const r = await fetch("/api/admin/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(costsForm),
+    });
+    const d = await r.json();
+    setSavingCosts(false);
+    if (!d.success) { alert(d.error); return; }
+    loadAll();
   }
 
   async function deleteMessage(id) {
@@ -166,7 +203,7 @@ export default function Admin() {
 
       <div className="ad-wrap">
         <h1 className="ad-title">Admin Dashboard</h1>
-        <p className="ad-sub">Revenue, analytics, users and messages — all in one place.</p>
+        <p className="ad-sub">Revenue, payments, analytics, users and messages — all in one place.</p>
 
         {/* TABS */}
         <div className="ad-tabs">
@@ -233,6 +270,36 @@ export default function Admin() {
                     </div>
                   ))}
                 </div>
+
+                <div className="ad-section-label">Growth &amp; engagement</div>
+                <div className="ad-grid">
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--a1l)" }}>{stats.newUsersThisMonth}</div>
+                    <div className="ad-label">New users this month</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--a3)" }}>{stats.activeUsers}</div>
+                    <div className="ad-label">Active users (30d)</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--text2)" }}>{stats.inactiveUsers}</div>
+                    <div className="ad-label">Inactive users</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "#f59e0b" }}>{stats.rateLimitHits?.thisWeek ?? 0}</div>
+                    <div className="ad-label">Rate-limit hits (7d)</div>
+                    <div className="ad-trend" style={{ color: "var(--text3)" }}>Free users maxing out — upgrade signal</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "#a097ff" }}>{stats.planChanges?.newPaidSubsThisMonth ?? 0}</div>
+                    <div className="ad-label">New paid subs this month</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--a4)" }}>{stats.planChanges?.conversionRate ?? 0}%</div>
+                    <div className="ad-label">Signup → paid conversion</div>
+                    <div className="ad-trend down">{stats.planChanges?.canceledThisMonth ?? 0} canceled this month</div>
+                  </div>
+                </div>
               </>
             )}
 
@@ -258,9 +325,53 @@ export default function Admin() {
                   </div>
                   <div className="rev-card net">
                     <div className="rev-num" style={{ color: "var(--a3)" }}>${rev.net?.toFixed(2) || "0.00"}</div>
-                    <div className="rev-label">Net profit</div>
+                    <div className="rev-label">Gross margin</div>
                     <div className="rev-sub"><span className="margin-badge">{margin}% margin</span></div>
                   </div>
+                  <div className="rev-card">
+                    <div className="rev-num" style={{ color: rev.trueNet >= 0 ? "var(--a3)" : "#ef4444" }}>${rev.trueNet?.toFixed(2) ?? "0.00"}</div>
+                    <div className="rev-label">True net profit</div>
+                    <div className="rev-sub">After ${rev.fixedCostsTotal?.toFixed(2) || "0.00"} fixed hosting costs</div>
+                  </div>
+                </div>
+
+                <div className="ad-section-label">Fixed monthly costs</div>
+                <div className="ad-section">
+                  <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 16 }}>
+                    Vercel/Supabase plan costs aren't available from any API — enter what you're actually paying so "True net profit" above is accurate.
+                  </p>
+                  <div className="settings-grid">
+                    <div className="settings-field">
+                      <label>Vercel ($/mo)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={costsForm.vercel}
+                        onChange={(e) => setCostsForm((f) => ({ ...f, vercel: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Supabase ($/mo)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={costsForm.supabase}
+                        onChange={(e) => setCostsForm((f) => ({ ...f, supabase: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Other ($/mo)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={costsForm.other}
+                        onChange={(e) => setCostsForm((f) => ({ ...f, other: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <button className="settings-save-btn" disabled={savingCosts} onClick={saveFixedCosts}>
+                    {savingCosts ? "Saving..." : "Save costs"}
+                  </button>
                 </div>
 
                 <div className="ad-section-label">Revenue breakdown</div>
@@ -319,6 +430,53 @@ export default function Admin() {
                       })}
                     </tbody>
                   </table>
+                </div>
+              </>
+            )}
+
+            {/* ── PAYMENTS TAB ── */}
+            {activeTab === "Payments" && (
+              <>
+                <div className="ad-section-label">Subscription status</div>
+                <div className="ad-grid">
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--a3)" }}>{subSummary?.active ?? 0}</div>
+                    <div className="ad-label">Active</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "#f59e0b" }}>{subSummary?.pastDue ?? 0}</div>
+                    <div className="ad-label">Past due</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "#ef4444" }}>{subSummary?.canceled ?? 0}</div>
+                    <div className="ad-label">Canceled</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--text2)" }}>{subSummary?.total ?? 0}</div>
+                    <div className="ad-label">Total subscriptions</div>
+                  </div>
+                </div>
+
+                <div className="ad-section-label">All subscriptions ({subscriptions?.length || 0})</div>
+                <div className="ad-section" style={{ padding: 0, overflow: "hidden" }}>
+                  {!subscriptions || subscriptions.length === 0 ? (
+                    <div className="ad-empty" style={{ padding: 24 }}>No subscriptions yet.</div>
+                  ) : (
+                    <table className="ad-table">
+                      <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Plan</th><th>Status</th><th>Started</th><th>Last updated</th></tr></thead>
+                      <tbody>
+                        {subscriptions.map((s) => (
+                          <tr key={s.id}>
+                            <td style={{ paddingLeft: 20 }}>{s.email}</td>
+                            <td><span className={`tier-pill ${s.tier}`}>{s.tier}</span></td>
+                            <td><span className={`status-pill ${s.status}`}>{s.status?.replace("_", " ")}</span></td>
+                            <td style={{ color: "var(--text3)" }}>{new Date(s.created_at).toLocaleDateString()}</td>
+                            <td style={{ color: "var(--text3)" }}>{s.updated_at ? new Date(s.updated_at).toLocaleDateString() : "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </>
             )}
@@ -423,6 +581,46 @@ export default function Admin() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+
+                <div className="ad-section-label">New users — last 6 months</div>
+                <div className="ad-section">
+                  <table className="ad-table">
+                    <thead><tr><th>Month</th><th>New signups</th></tr></thead>
+                    <tbody>
+                      {(stats.usersByMonth || []).map((m) => (
+                        <tr key={m.month}>
+                          <td>{m.month}</td>
+                          <td style={{ color: m.count > 0 ? "var(--a3)" : "var(--text3)", fontWeight: m.count > 0 ? 600 : 400 }}>
+                            {m.count > 0 ? `+${m.count}` : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="ad-section-label">Rate-limit hits — free users maxing out (upgrade signal)</div>
+                <div className="ad-section">
+                  <div style={{ marginBottom: 12, fontSize: 13, color: "var(--text2)" }}>
+                    This week: <strong style={{ color: "var(--text)" }}>{stats.rateLimitHits?.thisWeek ?? 0}</strong>
+                    &nbsp;·&nbsp; This month: <strong style={{ color: "var(--text)" }}>{stats.rateLimitHits?.thisMonth ?? 0}</strong>
+                  </div>
+                  {!stats.rateLimitHits?.topUsers || stats.rateLimitHits.topUsers.length === 0 ? (
+                    <div className="ad-empty">No one has hit the free daily limit recently.</div>
+                  ) : (
+                    <table className="ad-table">
+                      <thead><tr><th>Email</th><th>Times hit limit</th></tr></thead>
+                      <tbody>
+                        {stats.rateLimitHits.topUsers.map((h) => (
+                          <tr key={h.userId}>
+                            <td>{users?.find((u) => u.id === h.userId)?.email || h.userId}</td>
+                            <td style={{ fontWeight: 600, color: "#f59e0b" }}>{h.count}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </>
             )}
