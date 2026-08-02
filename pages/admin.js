@@ -98,10 +98,68 @@ const CSS = `
 .growth-toggle button{font-family:var(--fh);font-size:11px;font-weight:600;padding:6px 14px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--text2);transition:all 0.15s}
 .growth-toggle button.active{background:var(--a1);color:#fff}
 .growth-total{color:var(--text3);font-weight:500;font-size:12px}
+
+/* ── SCALING NOTES ── */
+.scale-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:14px;position:relative;overflow:hidden}
+.scale-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+.scale-card.high::before{background:#ef4444}
+.scale-card.medium::before{background:#f59e0b}
+.scale-card.low::before{background:var(--text3)}
+.scale-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.scale-title{font-family:var(--fh);font-size:15px;font-weight:700}
+.scale-sev{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:3px 10px;border-radius:100px}
+.scale-sev.high{background:rgba(239,68,68,0.15);color:#fca5a5}
+.scale-sev.medium{background:rgba(245,158,11,0.15);color:#f59e0b}
+.scale-sev.low{background:rgba(153,152,176,0.15);color:var(--text2)}
+.scale-where{font-size:11px;color:var(--text3);font-family:monospace;margin-bottom:10px}
+.scale-body{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px}
+.scale-fix{font-size:13px;color:var(--text2);line-height:1.6;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border-left:2px solid var(--a1)}
+.scale-fix strong{color:var(--text)}
 `;
 
-const TABS = ["Overview", "Revenue", "Plans", "Growth", "Payments", "Users", "Analytics", "Messages"];
+const TABS = ["Overview", "Revenue", "Plans", "Growth", "Payments", "Users", "Analytics", "Messages", "Scaling"];
 const GROWTH_PERIODS = ["daily", "weekly", "monthly", "yearly"];
+
+// Known scaling risks in the current codebase - not urgent at normal
+// early-stage traffic, but worth knowing about before they bite. Reference
+// material only; nothing here is auto-detected or live.
+const SCALING_NOTES = [
+  {
+    severity: "high",
+    title: "Admin dashboard does full-table scans",
+    where: "pages/api/admin/stats.js",
+    body: "Pulls every row from profiles, api_usage_logs, daily_usage, subscriptions, and revenue_events on every dashboard load, then aggregates in JavaScript. This is a data-volume problem, not a concurrent-user one — as api_usage_logs grows into the hundreds of thousands of rows over time, this page gets slower and will eventually time out.",
+    fix: "Add pagination / date-range limits to these queries, or move aggregation into SQL (views or scheduled rollups) instead of pulling raw rows into JS.",
+  },
+  {
+    severity: "high",
+    title: "Hard 1,000-user cap on admin user lookups",
+    where: "pages/api/admin/users.js, subscriptions.js, webhooks/stripe.js",
+    body: "listUsers({ perPage: 1000 }) has no pagination. Past 1,000 signups, some users can silently stop appearing in admin lists, and the Stripe webhook that syncs a payment to a user's tier could fail to find them at all.",
+    fix: "Paginate through all pages of listUsers(), or look up the specific customer/email directly instead of listing everyone.",
+  },
+  {
+    severity: "medium",
+    title: "Anonymous rate-limiting lives in server memory",
+    where: "lib/rateLimit.js",
+    body: "The anonymous per-IP counter is an in-memory Map. It doesn't share state across Vercel's multiple serverless instances, so anonymous users can inconsistently exceed the 10/day limit, and old entries are never cleaned up.",
+    fix: "Move anonymous rate-limiting to a shared store (a Supabase table or a service like Upstash Redis) instead of in-memory.",
+  },
+  {
+    severity: "medium",
+    title: "No retry/backoff around the Gemini API",
+    where: "lib/gemini.js",
+    body: "Every generation call goes straight to Google's API with no retry logic. If Gemini rate-limits you during a traffic spike, users just see a generic error instead of an automatic retry succeeding.",
+    fix: "Add exponential backoff/retry around the Gemini fetch call for transient errors (429/5xx).",
+  },
+  {
+    severity: "low",
+    title: "Supabase plan tier limits",
+    where: "External — Supabase project settings",
+    body: "Free/lower Supabase tiers cap database size, bandwidth, and concurrent connections. Not a code issue — just something to monitor and upgrade ahead of.",
+    fix: "Watch usage in the Supabase dashboard and upgrade the plan before hitting a hard limit.",
+  },
+];
 
 export default function Admin() {
   const router = useRouter();
@@ -842,6 +900,28 @@ export default function Admin() {
                     </table>
                   )}
                 </div>
+              </>
+            )}
+
+            {/* ── SCALING TAB ── */}
+            {activeTab === "Scaling" && (
+              <>
+                <div className="ad-section-label">Scale readiness notes</div>
+                <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 20 }}>
+                  Known scaling risks in the current setup — reference only, not urgent at normal early-stage traffic.
+                  Nothing on this tab is live-monitored; it's a checklist for when growth makes these worth fixing.
+                </p>
+                {SCALING_NOTES.map((note) => (
+                  <div key={note.title} className={`scale-card ${note.severity}`}>
+                    <div className="scale-head">
+                      <span className="scale-title">{note.title}</span>
+                      <span className={`scale-sev ${note.severity}`}>{note.severity}</span>
+                    </div>
+                    <div className="scale-where">{note.where}</div>
+                    <p className="scale-body">{note.body}</p>
+                    <div className="scale-fix"><strong>Fix when it matters: </strong>{note.fix}</div>
+                  </div>
+                ))}
               </>
             )}
           </>
