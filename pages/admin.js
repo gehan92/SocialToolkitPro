@@ -163,6 +163,21 @@ export default function Admin() {
     setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, subscription_tier: tier } : u));
   }
 
+  async function changeRole(userId, role) {
+    if (!confirm(role === "admin" ? "Grant this user full admin dashboard access?" : "Revoke admin access from this user?")) return;
+    setSavingTier(userId);
+    const { data: { session } } = await supabase.auth.getSession();
+    const r = await fetch("/api/admin/users", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ userId, role }),
+    });
+    const d = await r.json();
+    setSavingTier(null);
+    if (!d.success) { alert(d.error); return; }
+    setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role } : u));
+  }
+
   async function saveFixedCosts() {
     setSavingCosts(true);
     const { data: { session } } = await supabase.auth.getSession();
@@ -647,7 +662,7 @@ export default function Admin() {
                     <div className="ad-empty" style={{ padding: 24 }}>No users yet.</div>
                   ) : (
                     <table className="ad-table">
-                      <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Signed up</th><th>Plan</th><th>Change plan</th></tr></thead>
+                      <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Signed up</th><th>Plan</th><th>Change plan</th><th>Role</th><th>Change role</th></tr></thead>
                       <tbody>
                         {users.map((u) => (
                           <tr key={u.id}>
@@ -665,6 +680,22 @@ export default function Admin() {
                                 <option value="premium">premium</option>
                                 <option value="pro">pro</option>
                               </select>
+                            </td>
+                            <td><span className="nav-link-admin" style={{ padding: "3px 10px", fontSize: 11, fontWeight: 700, textTransform: "uppercase", borderRadius: 100, opacity: u.role === "admin" ? 1 : 0.4 }}>{u.role}</span></td>
+                            <td>
+                              {u.isBootstrapAdmin ? (
+                                <span style={{ fontSize: 11, color: "var(--text3)" }} title="Admin via ADMIN_EMAILS env var - always admin regardless of this setting">env-var admin</span>
+                              ) : (
+                                <select
+                                  className="ad-tier-select"
+                                  value={u.role}
+                                  disabled={savingTier === u.id}
+                                  onChange={(e) => changeRole(u.id, e.target.value)}
+                                >
+                                  <option value="user">user</option>
+                                  <option value="admin">admin</option>
+                                </select>
+                              )}
                             </td>
                           </tr>
                         ))}

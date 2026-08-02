@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
 import { getAuthUser } from "../../../lib/getAuthUser";
-import { isAdminEmail } from "../../../lib/isAdmin";
+import { isAdminUser } from "../../../lib/isAdmin";
 import { invalidatePlanConfigCache } from "../../../lib/planConfig";
 
 const DEFAULTS = {
@@ -10,7 +10,7 @@ const DEFAULTS = {
 
 export default async function handler(req, res) {
   const user = await getAuthUser(req);
-  if (!user || !isAdminEmail(user.email)) {
+  if (!user || !(await isAdminUser(user))) {
     return res.status(403).json({ success: false, error: "Not authorized" });
   }
 

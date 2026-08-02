@@ -7,6 +7,13 @@ create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   username text unique,
   subscription_tier text default 'free', -- 'free' | 'premium' | 'pro'
+  role text default 'user', -- 'user' | 'admin' - grants full admin dashboard + Pro access.
+                             -- ADMIN_EMAILS (env var) is a separate, always-on fallback
+                             -- admin list so this can never be locked out by a DB issue.
+                             -- There is deliberately no client-side UPDATE policy on
+                             -- profiles, so this column can only ever be changed via the
+                             -- admin dashboard's Users tab (service-role backend), never
+                             -- by a user editing their own profile.
   credits_used int default 0,
   credits_reset_date date default current_date,
   stripe_customer_id text,
