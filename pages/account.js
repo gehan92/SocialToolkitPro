@@ -248,7 +248,7 @@ export default function Account() {
       const r = await fetch("/api/subscription/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ plan: planId, email: user.email }),
+        body: JSON.stringify({ plan: planId }),
       });
       const d = await r.json();
       if (!d.success) { showToast(d.error, "error"); setUpgrading(null); return; }

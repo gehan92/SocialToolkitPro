@@ -55,19 +55,19 @@ export default async function handler(req, res) {
           updated_at: new Date().toISOString(),
         }, { onConflict: "stripe_subscription_id" });
 
-        // Update the user's profile: tier + customer ID
-        // Match by customer email (Stripe session has customer_email)
-        const customerEmail = session.customer_email;
-        if (customerEmail) {
-          const { data: authUser } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-          const matched = (authUser?.users || []).find((u) => u.email === customerEmail);
-          if (matched) {
-            await supabaseAdmin.from("profiles").update({
-              subscription_tier: tier,
-              stripe_customer_id: customerId,
-              subscription_status: "active",
-            }).eq("id", matched.id);
-          }
+        // Update the user's profile: tier + customer ID.
+        // client_reference_id is set to our own auth user.id at checkout
+        // creation time (see pages/api/subscription/checkout.js) - it's the
+        // only trustworthy link back to an app account. Never match by
+        // customer_email here: that field is attacker-controllable input to
+        // Stripe and would let anyone upgrade/rebind an arbitrary account.
+        const userId = session.client_reference_id;
+        if (userId) {
+          await supabaseAdmin.from("profiles").update({
+            subscription_tier: tier,
+            stripe_customer_id: customerId,
+            subscription_status: "active",
+          }).eq("id", userId);
         }
       }
       break;
