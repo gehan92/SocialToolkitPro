@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   const rl = await checkRateLimit(req, "tech-writing");
   if (!rl.allowed) {
-    return res.status(429).json({ success: false, error: "Daily limit reached.", resetAt: rl.resetAt });
+    return res.status(rl.code || 429).json({ success: false, error: rl.message, resetAt: rl.resetAt });
   }
 
   const t = type || "How-to Guide";

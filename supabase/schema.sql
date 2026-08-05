@@ -1,5 +1,12 @@
 -- SocialToolkit database schema
 -- Run this in the Supabase SQL editor after creating your project.
+--
+-- MIGRATION NOTE (trial + pay-as-you-go, added later): if profiles already
+-- exists in your live project, `create table if not exists` below won't add
+-- the two new columns to it. Run these two lines once in the Supabase SQL
+-- editor before the rest of this file:
+--   alter table profiles add column if not exists trial_started_at timestamp default current_timestamp;
+--   alter table profiles add column if not exists credits_balance int default 0;
 
 -- Supabase manages auth.users itself (you can't ALTER it directly), so
 -- subscription/usage fields live in a linked profiles table instead.
@@ -18,6 +25,14 @@ create table if not exists profiles (
   credits_reset_date date default current_date,
   stripe_customer_id text,
   subscription_status text default 'active', -- 'active' | 'canceled' | 'past_due'
+  -- Trial clock for the mandatory-account, 3-day declining trial (day 1-3 =
+  -- 3/2/1 generations, enforced in lib/rateLimit.js). Defaults to "now" so
+  -- existing rows backfilled by this migration also get a fresh trial
+  -- rather than an undefined/expired one.
+  trial_started_at timestamp default current_timestamp,
+  -- Pay-as-you-go balance: generations available once the trial ends and
+  -- the account isn't on a paid plan. Purchased via credit_purchases below.
+  credits_balance int default 0,
   created_at timestamp default current_timestamp,
   updated_at timestamp default current_timestamp
 );
@@ -27,7 +42,7 @@ create table if not exists profiles (
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, username) values (new.id, new.raw_user_meta_data->>'username');
+  insert into public.profiles (id, username, trial_started_at) values (new.id, new.raw_user_meta_data->>'username', current_timestamp);
   return new;
 end;
 $$ language plpgsql security definer;
@@ -62,6 +77,20 @@ create table if not exists subscriptions (
   created_at timestamp default current_timestamp,
   updated_at timestamp default current_timestamp
 );
+
+-- Pay-as-you-go credit purchases: one-time payments (not subscriptions) that
+-- top up profiles.credits_balance, spent once a free account's 3-day trial
+-- has ended and it isn't on a paid plan (see lib/rateLimit.js).
+create table if not exists credit_purchases (
+  id bigserial primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  credits int not null,
+  amount numeric(10,2) not null,
+  payment_reference text, -- processor's order/transaction id, for support lookups
+  created_at timestamp default current_timestamp
+);
+
+create index if not exists idx_credit_purchases_user on credit_purchases(user_id);
 
 -- Saved/favorited generations (Premium feature)
 create table if not exists saved_outputs (
@@ -166,6 +195,7 @@ alter table content_calendar enable row level security;
 alter table templates enable row level security;
 alter table contact_messages enable row level security;
 alter table admin_settings enable row level security;
+alter table credit_purchases enable row level security;
 -- No public policies for contact_messages/admin_settings: only the backend
 -- (service_role key, which bypasses RLS) reads/writes them.
 
@@ -189,3 +219,6 @@ create policy "Users can manage their own content_calendar" on content_calendar
 
 create policy "Users can manage their own templates" on templates
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "Users can view their own credit_purchases" on credit_purchases
+  for select using (auth.uid() = user_id);

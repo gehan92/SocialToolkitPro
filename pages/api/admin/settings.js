@@ -5,7 +5,17 @@ import { invalidatePlanConfigCache } from "../../../lib/planConfig";
 
 const DEFAULTS = {
   fixed_monthly_costs: { vercel: 0, supabase: 0, other: 0 },
-  plan_config: { premiumPrice: 9, proPrice: 29, freeDailyLimit: 10 },
+  plan_config: {
+    premiumPrice: 9,
+    proPrice: 29,
+    premiumAnnualPrice: 79,
+    proAnnualPrice: 299,
+    freeDailyLimit: 10,
+    trialDayLimits: [3, 2, 1],
+    fairUseDailyLimit: 500,
+    creditPackSize: 50,
+    creditPackPrice: 5,
+  },
 };
 
 export default async function handler(req, res) {
@@ -29,11 +39,22 @@ export default async function handler(req, res) {
   if (req.method === "PATCH") {
     let value;
     if (key === "plan_config") {
-      const { premiumPrice, proPrice, freeDailyLimit } = req.body || {};
+      const {
+        premiumPrice, proPrice, premiumAnnualPrice, proAnnualPrice,
+        freeDailyLimit, fairUseDailyLimit, creditPackSize, creditPackPrice, trialDayLimits,
+      } = req.body || {};
       value = {
         premiumPrice: Number(premiumPrice) > 0 ? Number(premiumPrice) : DEFAULTS.plan_config.premiumPrice,
         proPrice: Number(proPrice) > 0 ? Number(proPrice) : DEFAULTS.plan_config.proPrice,
+        premiumAnnualPrice: Number(premiumAnnualPrice) > 0 ? Number(premiumAnnualPrice) : DEFAULTS.plan_config.premiumAnnualPrice,
+        proAnnualPrice: Number(proAnnualPrice) > 0 ? Number(proAnnualPrice) : DEFAULTS.plan_config.proAnnualPrice,
         freeDailyLimit: Number(freeDailyLimit) > 0 ? Math.floor(Number(freeDailyLimit)) : DEFAULTS.plan_config.freeDailyLimit,
+        fairUseDailyLimit: Number(fairUseDailyLimit) > 0 ? Math.floor(Number(fairUseDailyLimit)) : DEFAULTS.plan_config.fairUseDailyLimit,
+        creditPackSize: Number(creditPackSize) > 0 ? Math.floor(Number(creditPackSize)) : DEFAULTS.plan_config.creditPackSize,
+        creditPackPrice: Number(creditPackPrice) > 0 ? Number(creditPackPrice) : DEFAULTS.plan_config.creditPackPrice,
+        trialDayLimits: Array.isArray(trialDayLimits) && trialDayLimits.length > 0 && trialDayLimits.every((n) => Number.isFinite(Number(n)) && Number(n) >= 0)
+          ? trialDayLimits.map(Number)
+          : DEFAULTS.plan_config.trialDayLimits,
       };
     } else {
       const { vercel, supabase, other } = req.body || {};

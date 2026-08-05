@@ -182,7 +182,11 @@ export default function Admin() {
   const [costsForm, setCostsForm] = useState({ vercel: "", supabase: "", other: "" });
   const [savingCosts, setSavingCosts] = useState(false);
   const [growthPeriod, setGrowthPeriod] = useState("weekly");
-  const [planForm, setPlanForm] = useState({ premiumPrice: "", proPrice: "", freeDailyLimit: "" });
+  const [planForm, setPlanForm] = useState({
+    premiumPrice: "", proPrice: "", premiumAnnualPrice: "", proAnnualPrice: "",
+    freeDailyLimit: "", fairUseDailyLimit: "", creditPackSize: "", creditPackPrice: "",
+    trialDayLimits: [3, 2, 1],
+  });
   const [savingPlan, setSavingPlan] = useState(false);
 
   useEffect(() => {
@@ -208,8 +212,18 @@ export default function Admin() {
     setSubSummary(subsRes.summary || null);
     const fc = statsRes.data?.revenue?.fixedCosts || { vercel: 0, supabase: 0, other: 0 };
     setCostsForm({ vercel: String(fc.vercel || ""), supabase: String(fc.supabase || ""), other: String(fc.other || "") });
-    const pc = statsRes.data?.planConfig || { premiumPrice: 9, proPrice: 29, freeDailyLimit: 10 };
-    setPlanForm({ premiumPrice: String(pc.premiumPrice), proPrice: String(pc.proPrice), freeDailyLimit: String(pc.freeDailyLimit) });
+    const pc = statsRes.data?.planConfig || { premiumPrice: 9, proPrice: 29, premiumAnnualPrice: 79, proAnnualPrice: 299, freeDailyLimit: 10, fairUseDailyLimit: 500, creditPackSize: 50, creditPackPrice: 5, trialDayLimits: [3, 2, 1] };
+    setPlanForm({
+      premiumPrice: String(pc.premiumPrice),
+      proPrice: String(pc.proPrice),
+      premiumAnnualPrice: String(pc.premiumAnnualPrice ?? 79),
+      proAnnualPrice: String(pc.proAnnualPrice ?? 299),
+      freeDailyLimit: String(pc.freeDailyLimit),
+      fairUseDailyLimit: String(pc.fairUseDailyLimit ?? 500),
+      creditPackSize: String(pc.creditPackSize ?? 50),
+      creditPackPrice: String(pc.creditPackPrice ?? 5),
+      trialDayLimits: Array.isArray(pc.trialDayLimits) && pc.trialDayLimits.length === 3 ? pc.trialDayLimits : [3, 2, 1],
+    });
   }
 
   useEffect(() => { if (user) loadAll(); }, [user?.id]);
@@ -263,7 +277,7 @@ export default function Admin() {
     const r = await fetch("/api/admin/settings?key=plan_config", {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-      body: JSON.stringify(planForm),
+      body: JSON.stringify({ ...planForm, trialDayLimits: planForm.trialDayLimits.map(Number) }),
     });
     const d = await r.json();
     setSavingPlan(false);
@@ -578,9 +592,10 @@ export default function Admin() {
                 <div className="ad-section-label">Plan pricing &amp; limits</div>
                 <div className="ad-section">
                   <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 16 }}>
-                    These values drive the revenue/profit math and the free-tier daily generation cap across the app.
-                    They do <strong>not</strong> change what Stripe actually charges — updating the Premium/Pro price here
-                    is for internal reporting only. To change real billing, create a new Price in Stripe and update the
+                    These values drive the revenue/profit math, the 3-day trial's daily caps, the hidden fair-use ceiling
+                    on "unlimited" Premium/Pro, and the pay-as-you-go credit pack. They do <strong>not</strong> change what
+                    Stripe actually charges — updating the Premium/Pro price here is for internal reporting only. To
+                    change real billing, create a new Price in Stripe and update the
                     <code style={{ margin: "0 4px" }}>STRIPE_PRICE_PREMIUM</code> / <code style={{ margin: "0 4px" }}>STRIPE_PRICE_PRO</code> env vars.
                   </p>
                   <div className="settings-grid">
@@ -603,12 +618,84 @@ export default function Admin() {
                       />
                     </div>
                     <div className="settings-field">
-                      <label>Free daily generation limit</label>
+                      <label>Premium price ($/year)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.premiumAnnualPrice}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, premiumAnnualPrice: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Pro price ($/year)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.proAnnualPrice}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, proAnnualPrice: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Free daily generation limit (legacy, unused)</label>
                       <input
                         type="number"
                         className="settings-input"
                         value={planForm.freeDailyLimit}
                         onChange={(e) => setPlanForm((f) => ({ ...f, freeDailyLimit: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Fair-use daily ceiling (hidden, Premium/Pro)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.fairUseDailyLimit}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, fairUseDailyLimit: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Credit pack size (generations)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.creditPackSize}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, creditPackSize: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Credit pack price ($)</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.creditPackPrice}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, creditPackPrice: e.target.value }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Trial day 1 limit</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.trialDayLimits[0]}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, trialDayLimits: [e.target.value, f.trialDayLimits[1], f.trialDayLimits[2]] }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Trial day 2 limit</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.trialDayLimits[1]}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, trialDayLimits: [f.trialDayLimits[0], e.target.value, f.trialDayLimits[2]] }))}
+                      />
+                    </div>
+                    <div className="settings-field">
+                      <label>Trial day 3 limit</label>
+                      <input
+                        type="number"
+                        className="settings-input"
+                        value={planForm.trialDayLimits[2]}
+                        onChange={(e) => setPlanForm((f) => ({ ...f, trialDayLimits: [f.trialDayLimits[0], f.trialDayLimits[1], e.target.value] }))}
                       />
                     </div>
                   </div>

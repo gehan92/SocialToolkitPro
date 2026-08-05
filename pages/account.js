@@ -8,14 +8,14 @@ import SiteNav from "../components/SiteNav";
 const PLANS = [
   {
     id: "free",
-    name: "Free",
+    name: "Free Trial",
     price: "$0",
-    period: "forever",
+    period: "3-day trial",
     color: "var(--text2)",
     badge: "free",
     features: [
       "5 core AI tools",
-      "10 generations / day",
+      "3 generations day 1, 2 day 2, 1 day 3",
       "All platforms supported",
       "18 languages",
     ],
@@ -184,6 +184,8 @@ export default function Account() {
   const [toast, setToast] = useState(null); // { msg, type }
   const [planConfig, setPlanConfig] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [billingCycle, setBillingCycle] = useState("annual"); // "monthly" | "annual" — default to annual, it's the better deal
+  const [buyingCredits, setBuyingCredits] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -248,7 +250,7 @@ export default function Account() {
       const r = await fetch("/api/subscription/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, cycle: billingCycle }),
       });
       const d = await r.json();
       if (!d.success) { showToast(d.error, "error"); setUpgrading(null); return; }
@@ -257,6 +259,22 @@ export default function Account() {
       showToast("Something went wrong. Please try again.", "error");
       setUpgrading(null);
     }
+  }
+
+  async function handleBuyCredits() {
+    setBuyingCredits(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    try {
+      const r = await fetch("/api/credits/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      });
+      const d = await r.json();
+      showToast(d.success ? "Credits purchased!" : (d.error || "Pay-as-you-go isn't available yet."), d.success ? "success" : "error");
+    } catch (e) {
+      showToast("Something went wrong. Please try again.", "error");
+    }
+    setBuyingCredits(false);
   }
 
   async function handleCancel() {
@@ -292,8 +310,14 @@ export default function Account() {
   }
 
   const tier = profile?.subscription_tier ?? "free";
-  const freeLimit = 10;
-  const usagePercent = tier === "free" ? Math.min((usageToday / freeLimit) * 100, 100) : 0;
+  const trialDayLimits = planConfig?.trialDayLimits || [3, 2, 1];
+  const trialStartedAt = profile?.trial_started_at || user.created_at;
+  const trialDay = Math.floor((Date.now() - new Date(trialStartedAt).getTime()) / 86400000) + 1;
+  const trialExpired = tier === "free" && trialDay > trialDayLimits.length;
+  const todayTrialLimit = trialDayLimits[Math.min(trialDay, trialDayLimits.length) - 1] || 0;
+  const creditsBalance = profile?.credits_balance || 0;
+  const freeLimit = todayTrialLimit;
+  const usagePercent = tier === "free" && !trialExpired ? Math.min((usageToday / freeLimit) * 100, 100) : 0;
   const usageColor = usagePercent >= 90 ? "#ef4444" : usagePercent >= 60 ? "#f59e0b" : "var(--a3)";
   const checkoutStatus = router.query.checkout;
 
@@ -383,15 +407,24 @@ export default function Account() {
 
           {/* Usage today */}
           <div className="acct-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
-            <span className="acct-label">Generations today</span>
+            <span className="acct-label">{tier === "free" && !trialExpired ? "Trial usage" : "Generations today"}</span>
             {isAdmin ? (
               <span className="acct-value" style={{ color: "var(--a4)" }}>♾ Unlimited — Admin access</span>
+            ) : tier === "free" && trialExpired ? (
+              <div style={{ width: "100%" }}>
+                <span className="acct-value">Your 3-day trial has ended.</span>{" "}
+                {creditsBalance > 0 ? (
+                  <span className="acct-value" style={{ color: "var(--a3)" }}>{creditsBalance} credit{creditsBalance === 1 ? "" : "s"} remaining</span>
+                ) : (
+                  <span className="acct-value" style={{ color: "var(--text3)" }}>Choose a plan or buy credits below to keep generating.</span>
+                )}
+              </div>
             ) : tier === "free" ? (
               <div className="usage-bar-wrap" style={{ width: "100%" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 14, color: "var(--text)" }}>Today's free generations</span>
+                  <span style={{ fontSize: 14, color: "var(--text)" }}>Trial day {trialDay} of {trialDayLimits.length}</span>
                   <span style={{ fontSize: 12, color: usageColor, fontWeight: 600 }}>
-                    {usagePercent >= 100 ? "Limit reached" : `${Math.round(usagePercent)}% used`}
+                    {usagePercent >= 100 ? "Today's trial limit reached" : `${Math.round(usagePercent)}% used`}
                   </span>
                 </div>
                 <div className="usage-bar-track">
@@ -403,6 +436,14 @@ export default function Account() {
               <span className="acct-value" style={{ color: "var(--a3)" }}>♾ Unlimited</span>
             )}
           </div>
+
+          {/* Pay-as-you-go credit balance (only relevant once someone has bought/used credits) */}
+          {!isAdmin && tier === "free" && creditsBalance > 0 && !trialExpired && (
+            <div className="acct-row">
+              <span className="acct-label">Credits balance</span>
+              <span className="acct-value" style={{ color: "var(--a3)" }}>{creditsBalance}</span>
+            </div>
+          )}
         </div>
 
         {/* ── PLAN MANAGEMENT ── */}
@@ -418,26 +459,53 @@ export default function Account() {
           </div>
         )}
 
+        {!isAdmin && (
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 20 }}>
+            <button
+              onClick={() => setBillingCycle("monthly")}
+              className="plan-btn"
+              style={{ width: "auto", padding: "8px 18px", background: billingCycle === "monthly" ? "var(--a1)" : "rgba(255,255,255,0.06)", color: billingCycle === "monthly" ? "#fff" : "var(--text2)" }}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingCycle("annual")}
+              className="plan-btn"
+              style={{ width: "auto", padding: "8px 18px", background: billingCycle === "annual" ? "var(--a1)" : "rgba(255,255,255,0.06)", color: billingCycle === "annual" ? "#fff" : "var(--text2)" }}
+            >
+              Annual — save ~27%
+            </button>
+          </div>
+        )}
+
         <div className="plan-grid">
           {PLANS.map((plan) => {
             const isCurrent = !isAdmin && tier === plan.id;
             const isDowngrade = !isAdmin && ((tier === "pro" && plan.id === "premium") || (tier !== "free" && plan.id === "free"));
             const isUpgrade = !isAdmin && !isCurrent && !isDowngrade;
+            const isAnnual = billingCycle === "annual" && plan.id !== "free";
+            const monthlyPrice = plan.id === "premium" ? planConfig?.premiumPrice : plan.id === "pro" ? planConfig?.proPrice : null;
+            const annualPrice = plan.id === "premium" ? planConfig?.premiumAnnualPrice : plan.id === "pro" ? planConfig?.proAnnualPrice : null;
+            const displayPrice = plan.id === "free" ? plan.price : `$${isAnnual ? (annualPrice ?? "…") : (monthlyPrice ?? "…")}`;
+            const displayPeriod = plan.id === "free" ? plan.period : isAnnual ? "/ year" : "/ month";
             return (
               <div key={plan.id} className={`plan-card plan-${plan.id}${isCurrent ? " current" : ""}`}>
                 {plan.popular && !isCurrent && !isAdmin && <div className="plan-popular-tag">Most Popular</div>}
                 {isCurrent && <div className="plan-popular-tag" style={{ background: "var(--a3)", color: "#06060a" }}>Current Plan</div>}
 
                 <div className="plan-name" style={{ color: plan.color }}>{plan.name}</div>
-                <div className="plan-price" style={{ color: plan.color }}>
-                  {planConfig && plan.id === "premium" ? `$${planConfig.premiumPrice}` : planConfig && plan.id === "pro" ? `$${planConfig.proPrice}` : plan.price}
+                <div className="plan-price" style={{ color: plan.color }}>{displayPrice}</div>
+                <div className="plan-period">
+                  {displayPeriod}
+                  {isAnnual && monthlyPrice && annualPrice && (
+                    <span style={{ display: "block", color: "var(--text3)", fontSize: 11, marginTop: 2 }}>
+                      equivalent to ${(annualPrice / 12).toFixed(2)}/mo
+                    </span>
+                  )}
                 </div>
-                <div className="plan-period">{plan.period}</div>
 
                 <ul className="plan-features">
-                  {plan.features.map((f) => (
-                    <li key={f}>{plan.id === "free" && planConfig && /generations \/ day/.test(f) ? `${planConfig.freeDailyLimit} generations / day` : f}</li>
-                  ))}
+                  {plan.features.map((f) => <li key={f}>{f}</li>)}
                   {plan.missing.map((f) => <li key={f} className="miss">{f}</li>)}
                 </ul>
 
@@ -463,6 +531,21 @@ export default function Account() {
             );
           })}
         </div>
+
+        {/* ── PAY-AS-YOU-GO (only makes sense for free/trial accounts, not needed once subscribed) ── */}
+        {!isAdmin && tier === "free" && planConfig && (
+          <div className="acct-card" style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Not ready to subscribe?</div>
+              <div style={{ fontSize: 12, color: "var(--text2)" }}>
+                Buy a one-time pack of {planConfig.creditPackSize} generations for ${planConfig.creditPackPrice} — no subscription, credits don't expire.
+              </div>
+            </div>
+            <button className="plan-btn" style={{ width: "auto", padding: "10px 18px", background: "rgba(255,255,255,0.06)", color: "var(--text)" }} onClick={handleBuyCredits} disabled={buyingCredits}>
+              {buyingCredits ? "Please wait…" : `Buy ${planConfig.creditPackSize} credits — $${planConfig.creditPackPrice}`}
+            </button>
+          </div>
+        )}
 
         {/* ── CANCEL SUBSCRIPTION (only if paid, never for admin) ── */}
         {tier !== "free" && !isAdmin && (

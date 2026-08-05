@@ -1,7 +1,7 @@
 import { stripe } from "../../../lib/stripeClient";
 import { getAuthUser } from "../../../lib/getAuthUser";
 
-// Body: { plan: "premium" | "pro" }
+// Body: { plan: "premium" | "pro", cycle?: "monthly" | "annual" }
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, error: "Method not allowed" });
@@ -16,11 +16,14 @@ export default async function handler(req, res) {
     return res.status(401).json({ success: false, error: "Please log in." });
   }
 
-  const { plan } = req.body || {};
-  const priceId = plan === "pro" ? process.env.STRIPE_PRICE_PRO : process.env.STRIPE_PRICE_PREMIUM;
+  const { plan, cycle } = req.body || {};
+  const isAnnual = cycle === "annual";
+  const priceId = isAnnual
+    ? (plan === "pro" ? process.env.STRIPE_PRICE_PRO_ANNUAL : process.env.STRIPE_PRICE_PREMIUM_ANNUAL)
+    : (plan === "pro" ? process.env.STRIPE_PRICE_PRO : process.env.STRIPE_PRICE_PREMIUM);
 
   if (!priceId) {
-    return res.status(500).json({ success: false, error: `Missing Stripe price ID for plan "${plan}"` });
+    return res.status(500).json({ success: false, error: `Missing Stripe price ID for plan "${plan}" (${isAnnual ? "annual" : "monthly"})` });
   }
 
   try {

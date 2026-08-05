@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   const rl = await checkRateLimit(req, "thread");
   if (!rl.allowed) {
-    return res.status(429).json({ success: false, error: "Daily free limit reached. Upgrade to Premium for unlimited generations.", resetAt: rl.resetAt });
+    return res.status(rl.code || 429).json({ success: false, error: rl.message, resetAt: rl.resetAt });
   }
 
   const n = count || 7;
