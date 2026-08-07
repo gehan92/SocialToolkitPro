@@ -67,6 +67,10 @@ function showResult(emptyId, resultId) {
   document.getElementById(emptyId).style.display = "none";
   document.getElementById(resultId).classList.add("show");
 }
+function clearOutput(emptyId, resultId) {
+  document.getElementById(resultId).classList.remove("show");
+  document.getElementById(emptyId).style.display = "";
+}
 
 /* TAB SWITCHING */
 function switchTab(name, btn) {
