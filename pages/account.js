@@ -157,19 +157,6 @@ const CSS = `
 .checkout-banner-text strong{display:block;font-size:14px;margin-bottom:2px}
 `;
 
-// Free-tier usage resets at UTC midnight, same as the backend counters.
-function timeUntilReset() {
-  const now = new Date();
-  const reset = new Date();
-  reset.setUTCHours(24, 0, 0, 0);
-  const totalMins = Math.max(0, Math.ceil((reset - now) / 60000));
-  const hours = Math.floor(totalMins / 60);
-  const mins = totalMins % 60;
-  if (hours > 0 && mins > 0) return `${hours}h ${mins}m`;
-  if (hours > 0) return `${hours}h`;
-  return `${mins}m`;
-}
-
 export default function Account() {
   const router = useRouter();
   const { user, loading } = useAuthUser();
@@ -422,15 +409,14 @@ export default function Account() {
             ) : tier === "free" ? (
               <div className="usage-bar-wrap" style={{ width: "100%" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 14, color: "var(--text)" }}>Trial day {trialDay} of {trialDayLimits.length}</span>
+                  <span style={{ fontSize: 14, color: "var(--text)" }}>Free trial</span>
                   <span style={{ fontSize: 12, color: usageColor, fontWeight: 600 }}>
-                    {usagePercent >= 100 ? "Today's trial limit reached" : `${Math.round(usagePercent)}% used`}
+                    {usagePercent >= 100 ? "Today's trial generations used" : `${Math.round(usagePercent)}% used`}
                   </span>
                 </div>
                 <div className="usage-bar-track">
                   <div className="usage-bar-fill" style={{ width: `${usagePercent}%`, background: usageColor }} />
                 </div>
-                <div className="usage-bar-label">Resets in {timeUntilReset()}</div>
               </div>
             ) : (
               <span className="acct-value" style={{ color: "var(--a3)" }}>♾ Unlimited</span>

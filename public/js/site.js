@@ -11,8 +11,8 @@ async function callApi(endpoint, payload) {
     });
     const d = await r.json();
     if (!d.success) {
-      if (r.status === 429) {
-        showLimitReachedModal(d.resetAt);
+      if (r.status === 429 || r.status === 402) {
+        showLimitReachedModal(r.status === 402);
         const err = new Error(d.error || "Daily limit reached");
         err.handled = true;
         throw err;
@@ -26,20 +26,9 @@ async function callApi(endpoint, payload) {
   }
 }
 
-/* Daily free-limit reached — a proper modal instead of a raw alert().
-   Shows a reset time and an upgrade nudge, but never the exact free-generation count. */
-function formatResetIn(resetAt) {
-  const diffMs = new Date(resetAt) - new Date();
-  if (!resetAt || diffMs <= 0) return "shortly";
-  const totalMins = Math.ceil(diffMs / 60000);
-  const hours = Math.floor(totalMins / 60);
-  const mins = totalMins % 60;
-  if (hours > 0 && mins > 0) return hours + "h " + mins + "m";
-  if (hours > 0) return hours + "h";
-  return mins + "m";
-}
-
-function showLimitReachedModal(resetAt) {
+/* Trial/limit reached — a proper modal instead of a raw alert().
+   Never shows the exact generation count or a reset countdown. */
+function showLimitReachedModal(trialExpired) {
   const existing = document.getElementById("limit-modal-backdrop");
   if (existing) existing.remove();
 
@@ -50,12 +39,16 @@ function showLimitReachedModal(resetAt) {
     if (e.target === backdrop) backdrop.remove();
   };
 
+  const title = trialExpired ? "Your free trial has ended" : "You've used today's trial generations";
+  const text = trialExpired
+    ? "Choose a plan or buy credits to keep generating."
+    : "Come back tomorrow, or upgrade now for unlimited generations.";
+
   backdrop.innerHTML =
     '<div class="limit-modal">' +
       '<div class="limit-modal-icon">⏳</div>' +
-      '<div class="limit-modal-title">You\'ve used today\'s free generations</div>' +
-      '<div class="limit-modal-text">Come back after it resets, or upgrade now for unlimited generations.</div>' +
-      '<div class="limit-modal-reset">Resets in ' + formatResetIn(resetAt) + '</div>' +
+      '<div class="limit-modal-title">' + title + '</div>' +
+      '<div class="limit-modal-text">' + text + '</div>' +
       '<div class="limit-modal-btns">' +
         '<a href="/account" class="limit-modal-upgrade">Upgrade to Premium</a>' +
         '<button type="button" class="limit-modal-close">Maybe later</button>' +
