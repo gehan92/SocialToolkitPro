@@ -30,13 +30,13 @@ export default function Terms() {
       <h2>4. Trial, subscriptions &amp; billing</h2>
       <ul>
         <li>New accounts start with a time-limited free trial with a declining daily generation allowance, as shown on your account page.</li>
-        <li>After the trial, continued use requires a paid Premium or Pro subscription (billed monthly or annually) or pay-as-you-go credits. Current pricing is shown on our <a href="/account">account page</a> and may change from time to time — we will make reasonable efforts to notify existing subscribers of price changes before they take effect on their next billing cycle.</li>
+        <li>After the trial, continued use requires a paid Premium or Pro subscription (billed monthly or annually) or pay-as-you-go credits. Current pricing is shown on our <a href="/account">account page</a>.</li>
         <li>Subscriptions are billed and processed by <a href="https://www.paddle.com" target="_blank" rel="noopener">Paddle.com Market Limited</a>, our authorized reseller and merchant of record. By subscribing, you authorize Paddle to charge your payment method on a recurring basis until you cancel. We are not responsible for errors, delays, or service issues caused by Paddle or your payment provider, and any dispute about a charge should first be raised with us so we can help resolve it.</li>
         <li>Subscriptions renew automatically for the same billing period at the then-current price, unless cancelled before the renewal date.</li>
-        <li>You may cancel at any time from your account page. Cancellation takes effect at the end of your current billing period — you keep access until then, and will not be charged again afterward.</li>
         <li>You can switch between Premium and Pro, or between monthly and annual billing, at any time from your account page.</li>
+        <li><strong style={{ color: "var(--text)" }}>Pricing changes:</strong> We may change our subscription pricing at any time. If a price change affects your active subscription, we will notify you before it takes effect. If you don&apos;t agree with the price change, you may cancel your subscription.</li>
+        <li><strong style={{ color: "var(--text)" }}>Cancellation and refunds:</strong> All purchases are non-refundable, except where a refund is required by applicable law. You may cancel your subscription at any time from your account page. If you cancel, your subscription remains active until the end of the current billing period, and you will not be charged again afterward. No prorated refunds are given for the remainder of a billing period, and subscriptions cannot be terminated before the end of the period you&apos;ve already paid for.</li>
         <li>Pay-as-you-go credit packs are one-time, non-recurring purchases. Credits have no monetary value, are non-transferable, and do not expire unless stated otherwise on the account page.</li>
-        <li>Except where required by applicable law, payments are non-refundable, including for partial billing periods and unused credits.</li>
         <li>We may suspend or downgrade your account if a payment fails and is not resolved within a reasonable time.</li>
       </ul>
 
