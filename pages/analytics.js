@@ -21,6 +21,12 @@ const CSS = `
 .an-bar-fill{height:100%;background:var(--a1);border-radius:6px}
 .an-bar-count{width:30px;text-align:right;color:var(--text3)}
 .upgrade-banner{background:linear-gradient(135deg,rgba(91,79,255,0.15),rgba(255,79,155,0.08));border:1px solid rgba(91,79,255,0.25);border-radius:16px;padding:32px;text-align:center}
+@media(max-width:480px){
+  .an-wrap{padding:32px 16px 60px}
+  .an-card,.an-breakdown{padding:16px}
+  .an-bar-label{width:90px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .upgrade-banner{padding:24px 16px}
+}
 `;
 
 export default function Analytics() {
