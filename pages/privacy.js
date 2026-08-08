@@ -14,8 +14,8 @@ export default function Privacy() {
 
       <h2>1. Information we collect</h2>
       <ul>
-        <li><strong style={{ color: "var(--text)" }}>Account information:</strong> When you sign up, we collect your email address, a username you choose, and your account password (stored securely and never visible to us in plain text — handled by our authentication provider, Supabase).</li>
-        <li><strong style={{ color: "var(--text)" }}>Content you generate:</strong> Topics, descriptions, and preferences you enter into our AI tools are sent to Google&apos;s Gemini API to produce your results. If you choose to &quot;save&quot; or &quot;favorite&quot; a result, or add a note to your content calendar, that content is stored in your account.</li>
+        <li><strong style={{ color: "var(--text)" }}>Account information:</strong> When you sign up, we collect your email address, a username you choose, and your account password (stored securely and never visible to us in plain text — handled by our authentication and database infrastructure provider).</li>
+        <li><strong style={{ color: "var(--text)" }}>Content you generate:</strong> Topics, descriptions, and preferences you enter into our AI tools are sent to our AI content generation provider to produce your results. If you choose to &quot;save&quot; or &quot;favorite&quot; a result, or add a note to your content calendar, that content is stored in your account.</li>
         <li><strong style={{ color: "var(--text)" }}>Usage data:</strong> We record which tools you use and how often, to enforce daily generation limits on the Free plan and to improve the service.</li>
         <li><strong style={{ color: "var(--text)" }}>Payment information:</strong> If you subscribe to Premium or Pro, or purchase pay-as-you-go credits, your payment is processed directly by Paddle.com Market Limited, our merchant of record. We do not receive or store your full card number — we only receive a subscription/transaction reference from Paddle to manage your billing status.</li>
         <li><strong style={{ color: "var(--text)" }}>Technical information:</strong> Like most websites, we automatically collect IP address, browser type, device type, pages visited, and time spent on pages, via cookies and similar technologies.</li>
@@ -46,26 +46,26 @@ export default function Privacy() {
       <h2>4. Payment processing</h2>
       <p>Paid subscriptions (Premium and Pro) and pay-as-you-go credit purchases are billed and processed by <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle.com Market Limited</a>, a PCI-compliant third-party payment processor and our merchant of record. Paddle collects and stores your payment card details directly — we never see or store your full card number. We only retain a reference to your Paddle customer/subscription record so we can keep your account tier in sync with your billing status.</p>
 
-      <h2>5. AI processing (Google Gemini)</h2>
-      <p>When you use one of our generator tools, the text you enter is sent to Google&apos;s Gemini API to produce your output. This exchange is subject to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google&apos;s Privacy Policy</a> and Gemini API terms. Please avoid entering sensitive personal information (e.g. financial details, health information, government ID numbers) into any generator tool.</p>
+      <h2>5. AI processing</h2>
+      <p>When you use one of our generator tools, the text you enter is sent to our third-party AI content generation provider to produce your output, subject to that provider&apos;s own privacy practices. Please avoid entering sensitive personal information (e.g. financial details, health information, government ID numbers) into any generator tool.</p>
 
       <h2>6. Cookies</h2>
       <p>We use cookies to keep you logged in, remember your preferences, and (where applicable) for analytics and advertising:</p>
       <ul>
         <li><strong style={{ color: "var(--text)" }}>Essential cookies:</strong> Required to keep you signed in and the site functioning.</li>
-        <li><strong style={{ color: "var(--text)" }}>Analytics cookies:</strong> Help us understand how the site is used (e.g. Google Analytics).</li>
-        <li><strong style={{ color: "var(--text)" }}>Advertising cookies:</strong> Used by Google AdSense, where enabled, to show relevant ads.</li>
+        <li><strong style={{ color: "var(--text)" }}>Analytics cookies:</strong> Help us understand how the site is used, via analytics tools.</li>
+        <li><strong style={{ color: "var(--text)" }}>Advertising cookies:</strong> Used by our advertising partner, where enabled, to show relevant ads.</li>
       </ul>
       <p>You can control cookies through your browser settings, though disabling essential cookies may prevent you from staying logged in.</p>
 
       <h2>7. Third-party service providers</h2>
-      <p>We share limited data with the following providers, solely to operate the service:</p>
+      <p>We share limited data with the following categories of providers, solely to operate the service:</p>
       <ul>
-        <li><strong style={{ color: "var(--text)" }}>Supabase</strong> — hosts our database and handles account authentication. <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase Privacy Policy</a></li>
-        <li><strong style={{ color: "var(--text)" }}>Paddle</strong> — processes payments for paid subscriptions and credit purchases, as our merchant of record. <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle Privacy Policy</a></li>
-        <li><strong style={{ color: "var(--text)" }}>Google Gemini API</strong> — generates AI content from your input. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
-        <li><strong style={{ color: "var(--text)" }}>Google Analytics</strong> — website traffic analysis, where enabled. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
-        <li><strong style={{ color: "var(--text)" }}>Google AdSense</strong> — advertising, where enabled. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
+        <li><strong style={{ color: "var(--text)" }}>Authentication &amp; database hosting</strong> — securely stores your account and app data.</li>
+        <li><strong style={{ color: "var(--text)" }}>Payment processing</strong> — <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle</a>, our merchant of record, processes subscriptions and credit purchases.</li>
+        <li><strong style={{ color: "var(--text)" }}>AI content generation</strong> — processes the text you submit to produce your Output.</li>
+        <li><strong style={{ color: "var(--text)" }}>Analytics</strong> — where enabled, helps us understand site traffic.</li>
+        <li><strong style={{ color: "var(--text)" }}>Advertising</strong> — where enabled, serves relevant ads.</li>
       </ul>
       <p>Using these providers may mean your information is processed on servers located outside your own country.</p>
 
@@ -111,7 +111,7 @@ export default function Privacy() {
       </ul>
 
       <h2>14. Security</h2>
-      <p>We take reasonable measures to protect your information, including relying on our providers&apos; security practices (Supabase, Paddle). However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
+      <p>We take reasonable measures to protect your information, including relying on our infrastructure and payment providers&apos; own security practices. However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
 
       <h2>15. Changes to this policy</h2>
       <p>We may update this Privacy Policy from time to time. We will update the &quot;Last updated&quot; date above when we do. Continued use of the service after changes are posted means you accept the updated policy.</p>
