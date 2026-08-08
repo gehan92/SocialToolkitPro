@@ -266,11 +266,38 @@ export default function Account() {
       });
       const d = await r.json();
       if (!d.success) { showToast(d.error, "error"); setUpgrading(null); return; }
-      paddleRef.current.Checkout.open({ transactionId: d.transactionId });
+      if (d.changed) {
+        // Already had a subscription - the backend switched its existing
+        // Paddle subscription to the new price directly, no checkout needed.
+        refreshProfile();
+        showToast("Your plan has been updated.");
+      } else {
+        paddleRef.current.Checkout.open({ transactionId: d.transactionId });
+      }
     } catch (e) {
       showToast("Something went wrong. Please try again.", "error");
     }
     setUpgrading(null);
+  }
+
+  async function handleResume() {
+    setCancelling(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    try {
+      const r = await fetch("/api/subscription/resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      });
+      const d = await r.json();
+      if (!d.success) { showToast(d.error, "error"); }
+      else {
+        setProfile((p) => ({ ...p, subscription_status: "active" }));
+        showToast("Your subscription has been resumed — billing will continue as normal.");
+      }
+    } catch (e) {
+      showToast("Something went wrong. Please try again.", "error");
+    }
+    setCancelling(false);
   }
 
   async function handleBuyCredits() {
@@ -544,11 +571,15 @@ export default function Account() {
                     disabled={!!upgrading}
                     style={plan.id === "pro" ? { background: "linear-gradient(135deg,#f59e0b,#ef4444)", color: "#fff" } : {}}
                   >
-                    {upgrading === plan.id ? "Redirecting…" : `Upgrade to ${plan.name} →`}
+                    {upgrading === plan.id ? "Updating…" : `Upgrade to ${plan.name} →`}
+                  </button>
+                ) : plan.id === "free" ? (
+                  <button className="plan-btn btn-downgrade" onClick={handleCancel} disabled={cancelling || isCanceling}>
+                    {isCanceling ? "Cancellation scheduled" : "Cancel subscription"}
                   </button>
                 ) : (
-                  <button className="plan-btn btn-downgrade" onClick={handleCancel} disabled={cancelling || isCanceling || plan.id !== "free"}>
-                    {isCanceling ? "Cancellation scheduled" : "Downgrade"}
+                  <button className="plan-btn btn-downgrade" onClick={() => handleUpgrade(plan.id)} disabled={!!upgrading}>
+                    {upgrading === plan.id ? "Updating…" : `Switch to ${plan.name}`}
                   </button>
                 )}
               </div>
@@ -582,9 +613,15 @@ export default function Account() {
                   ? "Cancellation scheduled — you'll keep full access for the rest of your current billing period, and won't be charged again. Your account will move to the Free plan afterward."
                   : `You can cancel anytime. You'll keep full ${tier} access until the end of your current billing period, and you won't be charged again. Your account will then move to the Free plan.`}
               </div>
-              <button className="btn-danger" onClick={handleCancel} disabled={cancelling || isCanceling}>
-                {isCanceling ? "Cancellation scheduled" : cancelling ? "Cancelling…" : "Cancel subscription"}
-              </button>
+              {isCanceling ? (
+                <button className="plan-btn" style={{ width: "auto", padding: "10px 18px" }} onClick={handleResume} disabled={cancelling}>
+                  {cancelling ? "Resuming…" : "Resume subscription"}
+                </button>
+              ) : (
+                <button className="btn-danger" onClick={handleCancel} disabled={cancelling}>
+                  {cancelling ? "Cancelling…" : "Cancel subscription"}
+                </button>
+              )}
             </div>
           </>
         )}
