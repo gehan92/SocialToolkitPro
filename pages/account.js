@@ -486,7 +486,7 @@ export default function Account() {
               className="plan-btn"
               style={{ width: "auto", padding: "8px 18px", background: billingCycle === "annual" ? "var(--a1)" : "rgba(255,255,255,0.06)", color: billingCycle === "annual" ? "#fff" : "var(--text2)" }}
             >
-              Annual — save ~27%
+              Annual — save more
             </button>
           </div>
         )}
@@ -501,6 +501,11 @@ export default function Account() {
             const annualPrice = plan.id === "premium" ? planConfig?.premiumAnnualPrice : plan.id === "pro" ? planConfig?.proAnnualPrice : null;
             const displayPrice = plan.id === "free" ? plan.price : `$${isAnnual ? (annualPrice ?? "…") : (monthlyPrice ?? "…")}`;
             const displayPeriod = plan.id === "free" ? plan.period : isAnnual ? "/ year" : "/ month";
+            // Computed from the live admin-configured prices (never hardcoded),
+            // so it stays correct whenever prices change in the admin settings.
+            const savingsPercent = isAnnual && monthlyPrice && annualPrice
+              ? Math.round((1 - annualPrice / (monthlyPrice * 12)) * 100)
+              : null;
             return (
               <div key={plan.id} className={`plan-card plan-${plan.id}${isCurrent ? " current" : ""}`}>
                 {plan.popular && !isCurrent && !isAdmin && <div className="plan-popular-tag">Most Popular</div>}
@@ -513,6 +518,7 @@ export default function Account() {
                   {isAnnual && monthlyPrice && annualPrice && (
                     <span style={{ display: "block", color: "var(--text3)", fontSize: 11, marginTop: 2 }}>
                       equivalent to ${(annualPrice / 12).toFixed(2)}/mo
+                      {savingsPercent > 0 && ` — save ${savingsPercent}%`}
                     </span>
                   )}
                 </div>
