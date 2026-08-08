@@ -121,6 +121,25 @@ const CSS = `
 `;
 
 const TABS = ["Overview", "Revenue", "Plans", "Growth", "Payments", "Users", "Analytics", "Messages", "Scaling"];
+const PAGE_SIZE = 25;
+
+const pagerBtnStyle = { fontFamily: "var(--fh)", fontSize: 12, fontWeight: 600, padding: "6px 14px", borderRadius: 10, border: "1px solid var(--border)", cursor: "pointer", background: "rgba(255,255,255,0.03)", color: "var(--text)" };
+
+function Pager({ page, total, onChange }) {
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (totalPages <= 1) return null;
+  return (
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, padding: "16px 0" }}>
+      <button style={{ ...pagerBtnStyle, opacity: page <= 1 ? 0.5 : 1 }} onClick={() => onChange(page - 1)} disabled={page <= 1}>
+        ← Prev
+      </button>
+      <span style={{ fontSize: 12, color: "var(--text3)" }}>Page {page} of {totalPages} ({total} total)</span>
+      <button style={{ ...pagerBtnStyle, opacity: page >= totalPages ? 0.5 : 1 }} onClick={() => onChange(page + 1)} disabled={page >= totalPages}>
+        Next →
+      </button>
+    </div>
+  );
+}
 const GROWTH_PERIODS = ["daily", "weekly", "monthly", "yearly"];
 
 // Known scaling risks in the current codebase - not urgent at normal
@@ -181,6 +200,12 @@ export default function Admin() {
   const [subSummary, setSubSummary] = useState(null);
   const [paymentHistory, setPaymentHistory] = useState(null);
   const [paymentSearch, setPaymentSearch] = useState("");
+  const [usersPage, setUsersPage] = useState(1);
+  const [usersTotal, setUsersTotal] = useState(0);
+  const [subsPage, setSubsPage] = useState(1);
+  const [subsTotal, setSubsTotal] = useState(0);
+  const [paymentsPage, setPaymentsPage] = useState(1);
+  const [paymentsTotal, setPaymentsTotal] = useState(0);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("Overview");
   const [savingTier, setSavingTier] = useState(null);
@@ -205,18 +230,24 @@ export default function Admin() {
     const headers = { Authorization: `Bearer ${session?.access_token}` };
     const [statsRes, usersRes, messagesRes, subsRes, paymentsRes] = await Promise.all([
       fetch("/api/admin/stats", { headers }).then((r) => r.json()),
-      fetch("/api/admin/users", { headers }).then((r) => r.json()),
+      fetch("/api/admin/users?page=1", { headers }).then((r) => r.json()),
       fetch("/api/admin/messages", { headers }).then((r) => r.json()),
-      fetch("/api/admin/subscriptions", { headers }).then((r) => r.json()),
-      fetch("/api/admin/payment-history", { headers }).then((r) => r.json()),
+      fetch("/api/admin/subscriptions?page=1", { headers }).then((r) => r.json()),
+      fetch("/api/admin/payment-history?page=1", { headers }).then((r) => r.json()),
     ]);
     if (!statsRes.success) { setError(statsRes.error); return; }
     setStats(statsRes.data);
     setUsers(usersRes.data || []);
+    setUsersPage(1);
+    setUsersTotal(usersRes.total || 0);
     setMessages(messagesRes.data || []);
     setSubscriptions(subsRes.data || []);
     setSubSummary(subsRes.summary || null);
+    setSubsPage(1);
+    setSubsTotal(subsRes.total || 0);
     setPaymentHistory(paymentsRes.data || []);
+    setPaymentsPage(1);
+    setPaymentsTotal(paymentsRes.total || 0);
     const fc = statsRes.data?.revenue?.fixedCosts || { vercel: 0, supabase: 0, other: 0 };
     setCostsForm({ vercel: String(fc.vercel || ""), supabase: String(fc.supabase || ""), other: String(fc.other || "") });
     const pc = statsRes.data?.planConfig || { premiumPrice: 9, proPrice: 29, premiumAnnualPrice: 79, proAnnualPrice: 299, freeDailyLimit: 10, fairUseDailyLimit: 500, creditPackSize: 50, creditPackPrice: 5, trialDayLimits: [3, 2, 1] };
@@ -234,6 +265,36 @@ export default function Admin() {
   }
 
   useEffect(() => { if (user) loadAll(); }, [user?.id]);
+
+  async function authHeaders() {
+    const { data: { session } } = await supabase.auth.getSession();
+    return { Authorization: `Bearer ${session?.access_token}` };
+  }
+
+  async function loadUsersPage(page) {
+    const r = await fetch(`/api/admin/users?page=${page}`, { headers: await authHeaders() }).then((r) => r.json());
+    if (!r.success) return;
+    setUsers(r.data || []);
+    setUsersPage(page);
+    setUsersTotal(r.total || 0);
+  }
+
+  async function loadSubsPage(page) {
+    const r = await fetch(`/api/admin/subscriptions?page=${page}`, { headers: await authHeaders() }).then((r) => r.json());
+    if (!r.success) return;
+    setSubscriptions(r.data || []);
+    setSubSummary(r.summary || null);
+    setSubsPage(page);
+    setSubsTotal(r.total || 0);
+  }
+
+  async function loadPaymentsPage(page) {
+    const r = await fetch(`/api/admin/payment-history?page=${page}`, { headers: await authHeaders() }).then((r) => r.json());
+    if (!r.success) return;
+    setPaymentHistory(r.data || []);
+    setPaymentsPage(page);
+    setPaymentsTotal(r.total || 0);
+  }
 
   async function changeTier(userId, tier) {
     setSavingTier(userId);
@@ -792,7 +853,7 @@ export default function Admin() {
                   </div>
                 </div>
 
-                <div className="ad-section-label">All subscriptions ({subscriptions?.length || 0})</div>
+                <div className="ad-section-label">All subscriptions ({subsTotal})</div>
                 <div className="ad-section" style={{ padding: 0, overflow: "hidden" }}>
                   {!subscriptions || subscriptions.length === 0 ? (
                     <div className="ad-empty" style={{ padding: 24 }}>No subscriptions yet.</div>
@@ -813,9 +874,10 @@ export default function Admin() {
                     </table>
                   )}
                 </div>
+                <Pager page={subsPage} total={subsTotal} onChange={loadSubsPage} />
 
                 <div className="ad-section-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                  <span>Payment history ({paymentHistory?.length || 0})</span>
+                  <span>Payment history ({paymentsTotal}) — search filters the current page only</span>
                   <input
                     type="text"
                     placeholder="Filter by email…"
@@ -855,13 +917,14 @@ export default function Admin() {
                     );
                   })()}
                 </div>
+                {!paymentSearch && <Pager page={paymentsPage} total={paymentsTotal} onChange={loadPaymentsPage} />}
               </>
             )}
 
             {/* ── USERS TAB ── */}
             {activeTab === "Users" && (
               <>
-                <div className="ad-section-label">All users ({users?.length || 0})</div>
+                <div className="ad-section-label">All users ({usersTotal})</div>
                 <div className="ad-section" style={{ padding: 0, overflow: "hidden" }}>
                   {!users || users.length === 0 ? (
                     <div className="ad-empty" style={{ padding: 24 }}>No users yet.</div>
@@ -910,6 +973,7 @@ export default function Admin() {
                     </table>
                   )}
                 </div>
+                <Pager page={usersPage} total={usersTotal} onChange={loadUsersPage} />
               </>
             )}
 

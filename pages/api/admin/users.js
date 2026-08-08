@@ -4,6 +4,7 @@ import { isAdminUser, isAdminEmail } from "../../../lib/isAdmin";
 
 const VALID_TIERS = ["free", "premium", "pro"];
 const VALID_ROLES = ["user", "admin"];
+const PAGE_SIZE = 25;
 
 export default async function handler(req, res) {
   const user = await getAuthUser(req);
@@ -12,10 +13,15 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "GET") {
-    const { data: profiles, error } = await supabaseAdmin
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    const { data: profiles, error, count } = await supabaseAdmin
       .from("profiles")
-      .select("id, subscription_tier, role, created_at")
-      .order("created_at", { ascending: false });
+      .select("id, subscription_tier, role, created_at", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
     if (error) return res.status(500).json({ success: false, error: error.message });
 
     const { data: authList, error: authError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
@@ -24,8 +30,12 @@ export default async function handler(req, res) {
     // Per-user hit counts: total API calls vs. how many of those hit the
     // free-tier rate limit (429s) - shown as two columns in the Users tab
     // so an admin can see usage/upgrade-pressure per user, not just an
-    // aggregate top-5 leaderboard.
-    const { data: logs } = await supabaseAdmin.from("api_usage_logs").select("user_id, status_code");
+    // aggregate top-5 leaderboard. Scoped to just this page's users (rather
+    // than pulling every api_usage_logs row) so it stays cheap as usage grows.
+    const pageUserIds = (profiles || []).map((p) => p.id);
+    const { data: logs } = pageUserIds.length
+      ? await supabaseAdmin.from("api_usage_logs").select("user_id, status_code").in("user_id", pageUserIds)
+      : { data: [] };
     const totalHitsById = {};
     const rateLimitHitsById = {};
     (logs || []).forEach((l) => {
@@ -56,7 +66,7 @@ export default async function handler(req, res) {
       };
     });
 
-    return res.status(200).json({ success: true, data: merged });
+    return res.status(200).json({ success: true, data: merged, page, pageSize: PAGE_SIZE, total: count || 0 });
   }
 
   if (req.method === "PATCH") {

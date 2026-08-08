@@ -2,6 +2,8 @@ import { supabaseAdmin } from "../../../lib/supabaseAdmin";
 import { getAuthUser } from "../../../lib/getAuthUser";
 import { isAdminUser } from "../../../lib/isAdmin";
 
+const PAGE_SIZE = 25;
+
 // Every individual payment event (charges, failures, refunds/chargebacks),
 // as opposed to pages/api/admin/subscriptions.js which only shows each
 // subscription's current status - this is the actual per-user transaction
@@ -15,11 +17,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method not allowed" });
   }
 
-  const { data: events, error } = await supabaseAdmin
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const { data: events, error, count } = await supabaseAdmin
     .from("revenue_events")
-    .select("id, user_id, email, tier, status, amount, fee_estimate, created_at")
+    .select("id, user_id, email, tier, status, amount, fee_estimate, created_at", { count: "exact" })
     .order("created_at", { ascending: false })
-    .limit(500);
+    .range(from, to);
   if (error) return res.status(500).json({ success: false, error: error.message });
 
   const { data: authList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
@@ -36,5 +42,5 @@ export default async function handler(req, res) {
     created_at: e.created_at,
   }));
 
-  return res.status(200).json({ success: true, data });
+  return res.status(200).json({ success: true, data, page, pageSize: PAGE_SIZE, total: count || 0 });
 }
