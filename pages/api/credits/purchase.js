@@ -1,18 +1,17 @@
 import { getAuthUser } from "../../../lib/getAuthUser";
 import { getPlanConfig } from "../../../lib/planConfig";
+import { paddle } from "../../../lib/paddleClient";
 
 // Pay-as-you-go: buy a fixed pack of generations (see planConfig's
 // creditPackSize/creditPackPrice) instead of subscribing. This is a one-time
-// payment, not a subscription, so it doesn't touch the Stripe subscription
-// checkout flow in pages/api/subscription/checkout.js.
+// payment, not a subscription, so PADDLE_PRICE_CREDIT_PACK must point at a
+// non-recurring price in the Paddle catalog.
 //
-// NOT WIRED TO A REAL PAYMENT PROCESSOR YET. Once one is chosen (Paddle,
-// Lemon Squeezy, etc.) and its account/API keys exist, replace the 501
-// response below with a real checkout-session creation call, and credit the
-// purchase (profiles.credits_balance + a credit_purchases row) from that
-// processor's webhook after payment actually succeeds - never credit here
-// on the client's request, the same way pages/api/webhooks/stripe.js is the
-// only place subscription tiers get upgraded.
+// Creates a draft transaction server-side (customData.userId comes from the
+// authenticated session, not client-editable JS) and hands its id back for
+// the frontend to open via Paddle.Checkout.open({ transactionId }). The
+// actual credit top-up only happens once pages/api/webhooks/paddle.js sees
+// this transaction complete - never here, on the client's request.
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, error: "Method not allowed" });
@@ -23,11 +22,29 @@ export default async function handler(req, res) {
     return res.status(401).json({ success: false, error: "Please log in." });
   }
 
+  if (!paddle) {
+    return res.status(500).json({ success: false, error: "Paddle isn't configured yet - add PADDLE_API_KEY to .env.local" });
+  }
+
+  const priceId = process.env.PADDLE_PRICE_CREDIT_PACK;
+  if (!priceId) {
+    return res.status(500).json({ success: false, error: "Missing PADDLE_PRICE_CREDIT_PACK" });
+  }
+
   const { creditPackSize, creditPackPrice } = await getPlanConfig();
 
-  return res.status(501).json({
-    success: false,
-    error: "Pay-as-you-go isn't connected to a payment processor yet.",
-    pack: { credits: creditPackSize, price: creditPackPrice },
-  });
+  try {
+    const transaction = await paddle.transactions.create({
+      items: [{ priceId, quantity: 1 }],
+      customData: { userId: user.id, kind: "credit_pack" },
+    });
+
+    return res.status(200).json({
+      success: true,
+      transactionId: transaction.id,
+      pack: { credits: creditPackSize, price: creditPackPrice },
+    });
+  } catch (e) {
+    return res.status(502).json({ success: false, error: e.message });
+  }
 }

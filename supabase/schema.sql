@@ -7,6 +7,15 @@
 -- editor before the rest of this file:
 --   alter table profiles add column if not exists trial_started_at timestamp default current_timestamp;
 --   alter table profiles add column if not exists credits_balance int default 0;
+--
+-- MIGRATION NOTE (Paddle, added later): the columns below are additive,
+-- alongside the existing stripe_* ones (Stripe code is left in place but
+-- inactive - see README's Billing & payments section). Run these once in
+-- the Supabase SQL editor before the rest of this file:
+--   alter table profiles add column if not exists paddle_customer_id text;
+--   alter table subscriptions add column if not exists paddle_subscription_id text unique;
+--   alter table subscriptions add column if not exists paddle_customer_id text;
+--   alter table revenue_events add column if not exists paddle_event_id text unique;
 
 -- Supabase manages auth.users itself (you can't ALTER it directly), so
 -- subscription/usage fields live in a linked profiles table instead.
@@ -23,7 +32,8 @@ create table if not exists profiles (
                              -- by a user editing their own profile.
   credits_used int default 0,
   credits_reset_date date default current_date,
-  stripe_customer_id text,
+  stripe_customer_id text, -- legacy: Stripe integration is inactive, kept for the not-yet-removed Stripe code
+  paddle_customer_id text,
   subscription_status text default 'active', -- 'active' | 'canceled' | 'past_due'
   -- Trial clock for the mandatory-account, 3-day declining trial (day 1-3 =
   -- 3/2/1 generations, enforced in lib/rateLimit.js). Defaults to "now" so
@@ -63,12 +73,14 @@ create table if not exists daily_usage (
   unique(user_id, usage_date)
 );
 
--- Stripe subscriptions
+-- Subscriptions (Paddle; stripe_* columns are legacy/inactive - see README)
 create table if not exists subscriptions (
   id bigserial primary key,
   user_id uuid references auth.users(id) on delete cascade,
   stripe_subscription_id text unique,
   stripe_customer_id text,
+  paddle_subscription_id text unique,
+  paddle_customer_id text,
   status text, -- 'active' | 'past_due' | 'canceled' | 'trialing'
   current_period_start timestamp,
   current_period_end timestamp,
@@ -169,6 +181,7 @@ create table if not exists admin_settings (
 create table if not exists revenue_events (
   id bigserial primary key,
   stripe_event_id text unique, -- idempotency: Stripe may redeliver the same webhook event
+  paddle_event_id text unique, -- idempotency: Paddle may redeliver the same webhook event
   user_id uuid references auth.users(id) on delete set null,
   stripe_customer_id text,
   email text,

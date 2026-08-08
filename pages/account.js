@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { initializePaddle } from "@paddle/paddle-js";
 import { useAuthUser } from "../lib/useAuthUser";
 import { supabase } from "../lib/supabaseClient";
 import SiteNav from "../components/SiteNav";
@@ -173,6 +174,7 @@ export default function Account() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [billingCycle, setBillingCycle] = useState("annual"); // "monthly" | "annual" — default to annual, it's the better deal
   const [buyingCredits, setBuyingCredits] = useState(false);
+  const paddleRef = useRef(null);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -182,10 +184,32 @@ export default function Account() {
     fetch("/api/plan-config").then((r) => r.json()).then((d) => { if (d.success) setPlanConfig(d.data); }).catch(() => {});
   }, []);
 
+  // Paddle Billing checkout is a client-side overlay, unlike Stripe's server
+  // redirect - it needs Paddle.js loaded and initialized once up front.
   useEffect(() => {
+    const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+    if (!token) return;
+    initializePaddle({
+      token,
+      environment: process.env.NEXT_PUBLIC_PADDLE_ENV === "production" ? "production" : "sandbox",
+      eventCallback(event) {
+        if (event.name === "checkout.completed") {
+          showToast("Payment successful! Updating your account…");
+          refreshProfile();
+        }
+      },
+    }).then((instance) => { paddleRef.current = instance || null; });
+  }, []);
+
+  function refreshProfile() {
     if (!user || !supabase) return;
     supabase.from("profiles").select("*").eq("id", user.id).single()
       .then(({ data }) => { setProfile(data); setUsernameInput(data?.username || ""); });
+  }
+
+  useEffect(() => {
+    if (!user || !supabase) return;
+    refreshProfile();
     const today = new Date().toISOString().slice(0, 10);
     supabase.from("daily_usage").select("generations_count")
       .eq("user_id", user.id).eq("usage_date", today).maybeSingle()
@@ -231,24 +255,26 @@ export default function Account() {
   }
 
   async function handleUpgrade(planId) {
+    if (!paddleRef.current) { showToast("Payments aren't set up yet.", "error"); return; }
     setUpgrading(planId);
     const { data: { session } } = await supabase.auth.getSession();
     try {
-      const r = await fetch("/api/subscription/checkout", {
+      const r = await fetch("/api/subscription/paddle-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({ plan: planId, cycle: billingCycle }),
       });
       const d = await r.json();
       if (!d.success) { showToast(d.error, "error"); setUpgrading(null); return; }
-      window.location.href = d.url;
+      paddleRef.current.Checkout.open({ transactionId: d.transactionId });
     } catch (e) {
       showToast("Something went wrong. Please try again.", "error");
-      setUpgrading(null);
     }
+    setUpgrading(null);
   }
 
   async function handleBuyCredits() {
+    if (!paddleRef.current) { showToast("Payments aren't set up yet.", "error"); return; }
     setBuyingCredits(true);
     const { data: { session } } = await supabase.auth.getSession();
     try {
@@ -257,7 +283,8 @@ export default function Account() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
       });
       const d = await r.json();
-      showToast(d.success ? "Credits purchased!" : (d.error || "Pay-as-you-go isn't available yet."), d.success ? "success" : "error");
+      if (!d.success) { showToast(d.error || "Pay-as-you-go isn't available yet.", "error"); setBuyingCredits(false); return; }
+      paddleRef.current.Checkout.open({ transactionId: d.transactionId });
     } catch (e) {
       showToast("Something went wrong. Please try again.", "error");
     }
