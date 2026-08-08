@@ -62,6 +62,7 @@ export default async function handler(req, res) {
       await supabaseAdmin.from("subscriptions").upsert({
         paddle_subscription_id: sub.id,
         paddle_customer_id: sub.customerId,
+        user_id: userId || undefined,
         status: sub.status,
         price_id: priceId,
         current_period_start: sub.currentBillingPeriod?.startsAt || null,
@@ -134,8 +135,13 @@ export default async function handler(req, res) {
       const priceId = txn.items?.[0]?.price?.id;
       const tier = txn.subscriptionId ? tierForPrice(priceId) : null;
 
-      let userId = null;
-      if (txn.customerId) {
+      // custom_data set directly on this transaction at creation time (see
+      // pages/api/subscription/paddle-checkout.js / pages/api/credits/purchase.js)
+      // is always present here - unlike subscription.created/activated's own
+      // custom_data, which depends on Paddle correctly copying it over from
+      // the transaction, this is the reliable link back to our account.
+      let userId = txn.customData?.userId || null;
+      if (!userId && txn.customerId) {
         const { data: profile } = await supabaseAdmin
           .from("profiles")
           .select("id")
@@ -152,6 +158,29 @@ export default async function handler(req, res) {
         amount: grandTotal,
         fee_estimate: feeEstimate,
       }, { onConflict: "paddle_event_id" });
+
+      // Belt-and-suspenders account upgrade: subscription.created/activated
+      // (above) already does this via the subscription's own custom_data,
+      // but that depends on Paddle copying it over from the transaction. This
+      // uses the transaction's own custom_data instead, which we set
+      // ourselves and is guaranteed present, so the upgrade still happens
+      // even if that copy-over doesn't occur.
+      if (txn.customData?.kind === "subscription" && txn.subscriptionId && userId) {
+        await supabaseAdmin.from("subscriptions").upsert({
+          paddle_subscription_id: txn.subscriptionId,
+          paddle_customer_id: txn.customerId,
+          user_id: userId,
+          status: "active",
+          price_id: priceId,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "paddle_subscription_id" });
+
+        await supabaseAdmin.from("profiles").update({
+          subscription_tier: tier,
+          paddle_customer_id: txn.customerId,
+          subscription_status: "active",
+        }).eq("id", userId);
+      }
 
       if (txn.customData?.kind === "credit_pack" && txn.customData?.userId) {
         const { creditPackSize } = await getPlanConfig();
