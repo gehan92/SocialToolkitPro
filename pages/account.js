@@ -292,7 +292,7 @@ export default function Account() {
   }
 
   async function handleCancel() {
-    if (!confirm("Are you sure you want to cancel your subscription? You'll keep access until the end of your billing period.")) return;
+    if (!confirm(`Cancel your ${tier} subscription? You'll keep full access until the end of your current billing period, and you won't be charged again after that.`)) return;
     setCancelling(true);
     const { data: { session } } = await supabase.auth.getSession();
     try {
@@ -304,7 +304,7 @@ export default function Account() {
       if (!d.success) { showToast(d.error, "error"); }
       else {
         setProfile((p) => ({ ...p, subscription_status: "canceling" }));
-        showToast("Subscription cancelled. You'll keep access until your billing period ends.");
+        showToast("Your subscription has been cancelled. You'll keep full access until your current billing period ends, and you won't be charged again.");
       }
     } catch (e) {
       showToast("Something went wrong. Please try again.", "error");
@@ -512,7 +512,7 @@ export default function Account() {
                 {plan.popular && !isCurrent && !isAdmin && <div className="plan-popular-tag">Most Popular</div>}
                 {isCurrent && (
                   <div className="plan-popular-tag" style={{ background: isCanceling ? "var(--text3)" : "var(--a3)", color: "#06060a" }}>
-                    {isCanceling ? "Cancels at period end" : "Current Plan"}
+                    {isCanceling ? "Cancellation scheduled" : "Current Plan"}
                   </div>
                 )}
 
@@ -579,8 +579,8 @@ export default function Account() {
               <div className="danger-info">
                 <strong>Cancel subscription</strong>
                 {isCanceling
-                  ? "Your cancellation is already scheduled. You'll keep access until the end of your current billing period, then your account reverts to Free."
-                  : `You'll keep ${tier} access until the end of your current billing period. After that your account reverts to Free.`}
+                  ? "Cancellation scheduled — you'll keep full access for the rest of your current billing period, and won't be charged again. Your account will move to the Free plan afterward."
+                  : `You can cancel anytime. You'll keep full ${tier} access until the end of your current billing period, and you won't be charged again. Your account will then move to the Free plan.`}
               </div>
               <button className="btn-danger" onClick={handleCancel} disabled={cancelling || isCanceling}>
                 {isCanceling ? "Cancellation scheduled" : cancelling ? "Cancelling…" : "Cancel subscription"}
