@@ -41,7 +41,7 @@ export default function Privacy() {
         <li>Calendar entries and saved templates, for as long as your account exists</li>
         <li>A log of your daily tool usage, used for rate-limiting and account-level analytics</li>
       </ul>
-      <p>You can request deletion of your account and associated data at any time by contacting us (see Section 12) — see Section 8 for details on how this is handled.</p>
+      <p>You can request deletion of your account and associated data at any time by contacting us (see Section 13) — see Section 8 for details on how this is handled.</p>
 
       <h2>4. Payment processing</h2>
       <p>Paid subscriptions (Premium and Pro) and pay-as-you-go credit purchases are billed and processed by <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle.com Market Limited</a>, a PCI-compliant third-party payment processor and our merchant of record. Paddle collects and stores your payment card details directly — we never see or store your full card number. We only retain a reference to your Paddle customer/subscription record so we can keep your account tier in sync with your billing status.</p>
@@ -70,7 +70,7 @@ export default function Privacy() {
       <p>Using these providers may mean your information is processed on servers located outside your own country.</p>
 
       <h2>8. Data retention &amp; deletion</h2>
-      <p>Saved/favorited outputs are automatically deleted 3 months after creation. Account data (profile, calendar entries, templates, usage history) is retained for as long as your account is active. If you want your account and associated data deleted, contact us at the email in Section 12 and we will process the request within a reasonable time, except where we are required to retain certain records (e.g. billing history) for legal or tax purposes.</p>
+      <p>Saved/favorited outputs are automatically deleted 3 months after creation. Account data (profile, calendar entries, templates, usage history) is retained for as long as your account is active. If you want your account and associated data deleted, contact us at the email in Section 13 and we will process the request within a reasonable time, except where we are required to retain certain records (e.g. billing history) for legal or tax purposes.</p>
 
       <h2>9. Data sharing</h2>
       <p>We do not sell your personal information. We share information only:</p>
@@ -94,17 +94,26 @@ export default function Privacy() {
       </ul>
       <p>To exercise these rights, contact us at the email below.</p>
 
-      <h2>12. Contact us</h2>
+      <h2>12. Legal basis for processing (EU / UK / EEA users)</h2>
+      <p>If you are located in the EU, UK, or EEA, we process your personal data on the following legal bases:</p>
+      <ul>
+        <li><strong style={{ color: "var(--text)" }}>Performance of a contract:</strong> to create your account, run the trial/subscription/credits system, and deliver the tools you request</li>
+        <li><strong style={{ color: "var(--text)" }}>Legitimate interests:</strong> to secure the service, prevent abuse of usage limits, and improve our tools</li>
+        <li><strong style={{ color: "var(--text)" }}>Consent:</strong> for optional cookies (analytics/advertising) and marketing emails, which you can withdraw at any time</li>
+        <li><strong style={{ color: "var(--text)" }}>Legal obligation:</strong> where we must retain or disclose data to comply with applicable law (e.g. billing/tax records)</li>
+      </ul>
+
+      <h2>13. Contact us</h2>
       <p>If you have any questions about this Privacy Policy, or want to request access to, correction of, or deletion of your data, contact us:</p>
       <ul>
         <li>Email: <a href="mailto:socialaikit@gmail.com">socialaikit@gmail.com</a></li>
         <li>Website: <a href="/contact">Contact page</a></li>
       </ul>
 
-      <h2>13. Security</h2>
+      <h2>14. Security</h2>
       <p>We take reasonable measures to protect your information, including relying on our providers&apos; security practices (Supabase, Paddle). However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
 
-      <h2>14. Changes to this policy</h2>
+      <h2>15. Changes to this policy</h2>
       <p>We may update this Privacy Policy from time to time. We will update the &quot;Last updated&quot; date above when we do. Continued use of the service after changes are posted means you accept the updated policy.</p>
     </LegalLayout>
   );
