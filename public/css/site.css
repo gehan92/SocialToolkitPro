@@ -59,6 +59,8 @@ nav{
 .nav-link-admin:hover{color:var(--a4);background:rgba(255,179,71,0.1)}
 .nav-cta{background:var(--a1);color:#fff;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;text-decoration:none;transition:all 0.2s;font-family:var(--fh)}
 .nav-cta:hover{background:var(--a1l);transform:translateY(-1px)}
+.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:4px;width:40px;height:40px;background:transparent;border:none;cursor:pointer;padding:8px;flex-shrink:0}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
 
 /* ── HERO ── */
 .hero{padding:100px 28px 80px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
@@ -314,7 +316,20 @@ footer{
 
 /* ── SMALL TABLET / LARGE PHONE (max 768px) ── */
 @media(max-width:768px){
-  .nav-link{display:none}
+  .nav-toggle{display:flex}
+  .nav-right{
+    position:absolute;top:64px;left:0;right:0;
+    flex-direction:column;align-items:stretch;gap:2px;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:10px 16px 18px;
+    display:none;
+    max-height:calc(100vh - 64px);overflow-y:auto;
+  }
+  .nav-right.open{display:flex}
+  .nav-link{display:block;padding:13px 12px;font-size:15px;border-radius:10px}
+  .nav-link-admin{display:inline-block}
+  .nav-cta{text-align:center;padding:13px 18px;margin-top:6px}
   .stats{gap:20px}
   .hero h1{font-size:42px;letter-spacing:-1.5px}
   .hero-sub{font-size:16px}

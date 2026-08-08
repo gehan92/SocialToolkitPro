@@ -8,6 +8,7 @@ export default function SiteNav() {
   const [username, setUsername] = useState("");
   const [dbTier, setDbTier] = useState("free");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!user || !supabase) {
@@ -74,7 +75,15 @@ export default function SiteNav() {
           </div>
           SocialToolkit
         </Link>
-        <div className="nav-right">
+        <button
+          className="nav-toggle"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <span /><span /><span />
+        </button>
+        <div className={`nav-right${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen(false)}>
           <Link className="nav-link" href="/#how">How it works</Link>
           <Link className="nav-link" href="/#tools">Tools</Link>
           <Link className="nav-link" href="/#faq">FAQ</Link>
