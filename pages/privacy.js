@@ -6,7 +6,7 @@ export default function Privacy() {
       title="Privacy Policy — SocialToolkit"
       description="Privacy Policy for SocialToolkit — how we handle your data."
       pageTag="Legal"
-      updated="August 2, 2026"
+      updated="August 8, 2026"
     >
       <div className="highlight">
         <p>This Privacy Policy explains how SocialToolkit (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) collects, uses, and protects information when you use our website and AI content tools, including free and paid (Premium/Pro) accounts. By using our service, you agree to the terms of this policy.</p>
@@ -17,7 +17,7 @@ export default function Privacy() {
         <li><strong style={{ color: "var(--text)" }}>Account information:</strong> When you sign up, we collect your email address, a username you choose, and your account password (stored securely and never visible to us in plain text — handled by our authentication provider, Supabase).</li>
         <li><strong style={{ color: "var(--text)" }}>Content you generate:</strong> Topics, descriptions, and preferences you enter into our AI tools are sent to Google&apos;s Gemini API to produce your results. If you choose to &quot;save&quot; or &quot;favorite&quot; a result, or add a note to your content calendar, that content is stored in your account.</li>
         <li><strong style={{ color: "var(--text)" }}>Usage data:</strong> We record which tools you use and how often, to enforce daily generation limits on the Free plan and to improve the service.</li>
-        <li><strong style={{ color: "var(--text)" }}>Payment information:</strong> If you subscribe to Premium or Pro, your payment is processed directly by Stripe. We do not receive or store your full card number — we only receive a subscription/customer reference from Stripe to manage your billing status.</li>
+        <li><strong style={{ color: "var(--text)" }}>Payment information:</strong> If you subscribe to Premium or Pro, or purchase pay-as-you-go credits, your payment is processed directly by Paddle.com Market Limited, our merchant of record. We do not receive or store your full card number — we only receive a subscription/transaction reference from Paddle to manage your billing status.</li>
         <li><strong style={{ color: "var(--text)" }}>Technical information:</strong> Like most websites, we automatically collect IP address, browser type, device type, pages visited, and time spent on pages, via cookies and similar technologies.</li>
       </ul>
 
@@ -44,7 +44,7 @@ export default function Privacy() {
       <p>You can request deletion of your account and associated data at any time by contacting us (see Section 12) — see Section 8 for details on how this is handled.</p>
 
       <h2>4. Payment processing</h2>
-      <p>Paid subscriptions (Premium and Pro) are billed and processed by <a href="https://stripe.com/privacy" target="_blank" rel="noopener">Stripe, Inc.</a>, a PCI-compliant third-party payment processor. Stripe collects and stores your payment card details directly — we never see or store your full card number. We only retain a reference to your Stripe customer/subscription record so we can keep your account tier in sync with your billing status.</p>
+      <p>Paid subscriptions (Premium and Pro) and pay-as-you-go credit purchases are billed and processed by <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle.com Market Limited</a>, a PCI-compliant third-party payment processor and our merchant of record. Paddle collects and stores your payment card details directly — we never see or store your full card number. We only retain a reference to your Paddle customer/subscription record so we can keep your account tier in sync with your billing status.</p>
 
       <h2>5. AI processing (Google Gemini)</h2>
       <p>When you use one of our generator tools, the text you enter is sent to Google&apos;s Gemini API to produce your output. This exchange is subject to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google&apos;s Privacy Policy</a> and Gemini API terms. Please avoid entering sensitive personal information (e.g. financial details, health information, government ID numbers) into any generator tool.</p>
@@ -62,7 +62,7 @@ export default function Privacy() {
       <p>We share limited data with the following providers, solely to operate the service:</p>
       <ul>
         <li><strong style={{ color: "var(--text)" }}>Supabase</strong> — hosts our database and handles account authentication. <a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase Privacy Policy</a></li>
-        <li><strong style={{ color: "var(--text)" }}>Stripe</strong> — processes payments for paid subscriptions. <a href="https://stripe.com/privacy" target="_blank" rel="noopener">Stripe Privacy Policy</a></li>
+        <li><strong style={{ color: "var(--text)" }}>Paddle</strong> — processes payments for paid subscriptions and credit purchases, as our merchant of record. <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">Paddle Privacy Policy</a></li>
         <li><strong style={{ color: "var(--text)" }}>Google Gemini API</strong> — generates AI content from your input. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
         <li><strong style={{ color: "var(--text)" }}>Google Analytics</strong> — website traffic analysis, where enabled. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
         <li><strong style={{ color: "var(--text)" }}>Google AdSense</strong> — advertising, where enabled. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
@@ -102,7 +102,7 @@ export default function Privacy() {
       </ul>
 
       <h2>13. Security</h2>
-      <p>We take reasonable measures to protect your information, including relying on our providers&apos; security practices (Supabase, Stripe). However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
+      <p>We take reasonable measures to protect your information, including relying on our providers&apos; security practices (Supabase, Paddle). However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.</p>
 
       <h2>14. Changes to this policy</h2>
       <p>We may update this Privacy Policy from time to time. We will update the &quot;Last updated&quot; date above when we do. Continued use of the service after changes are posted means you accept the updated policy.</p>
