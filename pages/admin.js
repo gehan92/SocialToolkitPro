@@ -83,6 +83,7 @@ const CSS = `
 .status-pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
 .status-pill.active{background:rgba(0,229,160,0.15);color:var(--a3)}
 .status-pill.past_due{background:rgba(245,158,11,0.15);color:#f59e0b}
+.status-pill.canceling{background:rgba(160,151,255,0.15);color:var(--a4)}
 .status-pill.canceled{background:rgba(239,68,68,0.15);color:#ef4444}
 .status-pill.trialing{background:rgba(91,79,255,0.15);color:#a097ff}
 
@@ -770,6 +771,10 @@ export default function Admin() {
                   <div className="ad-card">
                     <div className="ad-num" style={{ color: "#f59e0b" }}>{subSummary?.pastDue ?? 0}</div>
                     <div className="ad-label">Past due</div>
+                  </div>
+                  <div className="ad-card">
+                    <div className="ad-num" style={{ color: "var(--a4)" }}>{subSummary?.canceling ?? 0}</div>
+                    <div className="ad-label">Canceling</div>
                   </div>
                   <div className="ad-card">
                     <div className="ad-num" style={{ color: "#ef4444" }}>{subSummary?.canceled ?? 0}</div>
