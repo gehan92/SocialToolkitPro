@@ -227,6 +227,50 @@ export default async function handler(req, res) {
       break;
     }
 
+    // Fires for refunds and chargebacks approved on Paddle's side (issued
+    // from the Paddle dashboard, or via a customer's card issuer). Without
+    // this, a refunded/charged-back customer would silently keep paid access
+    // forever, and the admin revenue dashboard would never reflect the loss.
+    case EventName.AdjustmentCreated: {
+      const adj = event.data;
+      if (adj.status !== "approved") break;
+
+      const refundAmount = Number(adj.totals?.total || 0) / 100;
+      const isRevoking = adj.action === "refund" || adj.action === "chargeback";
+
+      let userId = null;
+      if (adj.customerId) {
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("id")
+          .eq("paddle_customer_id", adj.customerId)
+          .maybeSingle();
+        userId = profile?.id || null;
+      }
+
+      // Negative amount, still status "paid" so it nets correctly against
+      // the original charge in pages/api/admin/stats.js's revenue sums,
+      // without needing a separate "refunded" bucket there.
+      await supabaseAdmin.from("revenue_events").upsert({
+        paddle_event_id: event.eventId,
+        user_id: userId,
+        status: "paid",
+        amount: -refundAmount,
+        fee_estimate: 0,
+      }, { onConflict: "paddle_event_id" });
+
+      if (isRevoking && adj.subscriptionId && userId) {
+        await supabaseAdmin.from("subscriptions")
+          .update({ status: "canceled", updated_at: new Date().toISOString() })
+          .eq("paddle_subscription_id", adj.subscriptionId);
+
+        await supabaseAdmin.from("profiles")
+          .update({ subscription_tier: "free", subscription_status: "canceled" })
+          .eq("id", userId);
+      }
+      break;
+    }
+
     default:
       break;
   }

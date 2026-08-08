@@ -174,6 +174,7 @@ export default function Account() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [billingCycle, setBillingCycle] = useState("annual"); // "monthly" | "annual" — default to annual, it's the better deal
   const [buyingCredits, setBuyingCredits] = useState(false);
+  const [managingBilling, setManagingBilling] = useState(false);
   const paddleRef = useRef(null);
 
   useEffect(() => {
@@ -278,6 +279,23 @@ export default function Account() {
       showToast("Something went wrong. Please try again.", "error");
     }
     setUpgrading(null);
+  }
+
+  async function handleManageBilling() {
+    setManagingBilling(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    try {
+      const r = await fetch("/api/subscription/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      });
+      const d = await r.json();
+      if (!d.success) { showToast(d.error, "error"); }
+      else { window.open(d.url, "_blank", "noopener"); }
+    } catch (e) {
+      showToast("Something went wrong. Please try again.", "error");
+    }
+    setManagingBilling(false);
   }
 
   async function handleResume() {
@@ -488,7 +506,18 @@ export default function Account() {
         </div>
 
         {/* ── PLAN MANAGEMENT ── */}
-        <div className="acct-section-title">Plan & Billing</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+          <div className="acct-section-title" style={{ marginBottom: 0 }}>Plan & Billing</div>
+          {!isAdmin && tier !== "free" && (
+            <button
+              onClick={handleManageBilling}
+              disabled={managingBilling}
+              style={{ background: "transparent", border: "1px solid var(--border2)", color: "var(--text2)", borderRadius: 10, padding: "8px 16px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              {managingBilling ? "Opening…" : "Manage billing & invoices ↗"}
+            </button>
+          )}
+        </div>
 
         {isAdmin && (
           <div className="checkout-banner" style={{ background: "rgba(255,179,71,0.08)", borderColor: "rgba(255,179,71,0.25)" }}>
