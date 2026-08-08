@@ -72,8 +72,8 @@ const CSS = `
 .chart-bar:hover{opacity:0.7}
 
 /* ── TABS ── */
-.ad-tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:5px;width:fit-content}
-.ad-tab{font-family:var(--fh);font-size:12px;font-weight:600;padding:8px 16px;border-radius:10px;border:none;cursor:pointer;background:transparent;color:var(--text2);transition:all 0.2s;letter-spacing:-0.2px}
+.ad-tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:5px;width:fit-content;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ad-tab{font-family:var(--fh);font-size:12px;font-weight:600;padding:8px 16px;border-radius:10px;border:none;cursor:pointer;background:transparent;color:var(--text2);transition:all 0.2s;letter-spacing:-0.2px;white-space:nowrap;flex-shrink:0}
 .ad-tab.active{background:var(--a1);color:#fff}
 
 /* ── PROFIT MARGIN ── */
@@ -118,6 +118,16 @@ const CSS = `
 .scale-body{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px}
 .scale-fix{font-size:13px;color:var(--text2);line-height:1.6;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border-left:2px solid var(--a1)}
 .scale-fix strong{color:var(--text)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .ad-wrap{padding:32px 16px 80px}
+  .ad-section{padding:16px}
+  .ad-card,.rev-card{padding:16px 14px}
+  .ad-num{font-size:24px}
+  .rev-num{font-size:22px}
+  .ad-section-title{flex-wrap:wrap;gap:8px}
+}
 `;
 
 const TABS = ["Overview", "Revenue", "Plans", "Growth", "Payments", "Users", "Analytics", "Messages", "Scaling"];
@@ -596,7 +606,7 @@ export default function Admin() {
 
                 <div className="ad-section-label">Revenue breakdown</div>
                 <div className="ad-section">
-                  <table className="ad-table">
+                  <div style={{ overflowX: "auto" }}><table className="ad-table">
                     <thead><tr><th>Plan</th><th>Users</th><th>Price</th><th>Gross</th><th>After Stripe fee</th></tr></thead>
                     <tbody>
                       <tr>
@@ -621,12 +631,12 @@ export default function Admin() {
                         <td style={{ color: "var(--a3)" }}>${rev.net?.toFixed(2) || "0.00"}</td>
                       </tr>
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
 
                 <div className="ad-section-label">Growth projection (estimates)</div>
                 <div className="ad-section">
-                  <table className="ad-table">
+                  <div style={{ overflowX: "auto" }}><table className="ad-table">
                     <thead><tr><th>Paid users</th><th>Mix</th><th>Gross/mo</th><th>Net profit/mo</th></tr></thead>
                     <tbody>
                       {[
@@ -649,7 +659,7 @@ export default function Admin() {
                         );
                       })}
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
               </>
             )}
@@ -774,7 +784,7 @@ export default function Admin() {
 
                 <div className="ad-section-label">Current plans</div>
                 <div className="ad-section" style={{ padding: 0, overflow: "hidden" }}>
-                  <table className="ad-table">
+                  <div style={{ overflowX: "auto" }}><table className="ad-table">
                     <thead><tr><th style={{ paddingLeft: 20 }}>Plan</th><th>Price</th><th>Subscribers</th><th>Daily generation limit</th></tr></thead>
                     <tbody>
                       <tr>
@@ -796,7 +806,7 @@ export default function Admin() {
                         <td>Unlimited</td>
                       </tr>
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
               </>
             )}
@@ -858,7 +868,7 @@ export default function Admin() {
                   {!subscriptions || subscriptions.length === 0 ? (
                     <div className="ad-empty" style={{ padding: 24 }}>No subscriptions yet.</div>
                   ) : (
-                    <table className="ad-table">
+                    <div style={{ overflowX: "auto" }}><table className="ad-table">
                       <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Plan</th><th>Status</th><th>Started</th><th>Last updated</th></tr></thead>
                       <tbody>
                         {subscriptions.map((s) => (
@@ -871,7 +881,7 @@ export default function Admin() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
                 <Pager page={subsPage} total={subsTotal} onChange={loadSubsPage} />
@@ -897,7 +907,7 @@ export default function Admin() {
                       return <div className="ad-empty" style={{ padding: 24 }}>No payments match "{paymentSearch}".</div>;
                     }
                     return (
-                      <table className="ad-table">
+                      <div style={{ overflowX: "auto" }}><table className="ad-table">
                         <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Plan</th><th>Status</th><th>Amount</th><th>Fee est.</th><th>Date</th></tr></thead>
                         <tbody>
                           {filtered.map((p) => (
@@ -913,7 +923,7 @@ export default function Admin() {
                             </tr>
                           ))}
                         </tbody>
-                      </table>
+                      </table></div>
                     );
                   })()}
                 </div>
@@ -929,7 +939,7 @@ export default function Admin() {
                   {!users || users.length === 0 ? (
                     <div className="ad-empty" style={{ padding: 24 }}>No users yet.</div>
                   ) : (
-                    <table className="ad-table">
+                    <div style={{ overflowX: "auto" }}><table className="ad-table">
                       <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Signed up</th><th>Generations</th><th>Rate-limit hits</th><th>Plan</th><th>Change plan</th><th>Role</th><th>Change role</th></tr></thead>
                       <tbody>
                         {users.map((u) => (
@@ -970,7 +980,7 @@ export default function Admin() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
                 <Pager page={usersPage} total={usersTotal} onChange={loadUsersPage} />
@@ -1027,7 +1037,7 @@ export default function Admin() {
 
                 <div className="ad-section-label">New users — last 8 weeks</div>
                 <div className="ad-section">
-                  <table className="ad-table">
+                  <div style={{ overflowX: "auto" }}><table className="ad-table">
                     <thead><tr><th>Week starting</th><th>New signups</th></tr></thead>
                     <tbody>
                       {(stats.usersByWeek || []).map((w) => (
@@ -1039,12 +1049,12 @@ export default function Admin() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
 
                 <div className="ad-section-label">New users — last 6 months</div>
                 <div className="ad-section">
-                  <table className="ad-table">
+                  <div style={{ overflowX: "auto" }}><table className="ad-table">
                     <thead><tr><th>Month</th><th>New signups</th></tr></thead>
                     <tbody>
                       {(stats.usersByMonth || []).map((m) => (
@@ -1056,7 +1066,7 @@ export default function Admin() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
 
                 <div className="ad-section-label">Rate-limit hits — free users maxing out (upgrade signal)</div>
@@ -1068,7 +1078,7 @@ export default function Admin() {
                   {!stats.rateLimitHits?.topUsers || stats.rateLimitHits.topUsers.length === 0 ? (
                     <div className="ad-empty">No one has hit the free daily limit recently.</div>
                   ) : (
-                    <table className="ad-table">
+                    <div style={{ overflowX: "auto" }}><table className="ad-table">
                       <thead><tr><th>Email</th><th>Times hit limit</th></tr></thead>
                       <tbody>
                         {stats.rateLimitHits.topUsers.map((h) => (
@@ -1078,7 +1088,7 @@ export default function Admin() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
               </>
@@ -1092,7 +1102,7 @@ export default function Admin() {
                   {!messages || messages.length === 0 ? (
                     <div className="ad-empty" style={{ padding: 24 }}>No messages yet.</div>
                   ) : (
-                    <table className="ad-table">
+                    <div style={{ overflowX: "auto" }}><table className="ad-table">
                       <thead><tr><th style={{ paddingLeft: 20 }}>From</th><th>Subject</th><th>Message</th><th>Sent</th><th></th></tr></thead>
                       <tbody>
                         {messages.map((m) => (
@@ -1108,7 +1118,7 @@ export default function Admin() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   )}
                 </div>
               </>
