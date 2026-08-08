@@ -47,10 +47,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ received: true });
   }
 
-  // TEMPORARY diagnostic logging while debugging why the account-upgrade
-  // isn't happening after a successful checkout - remove once confirmed working.
-  console.log(`[paddle webhook] event: ${event.eventType}`, JSON.stringify(event.data?.customData ?? null));
-
   switch (event.eventType) {
     // Fires once a subscription's first payment succeeds. custom_data.userId
     // was set server-side in pages/api/subscription/paddle-checkout.js when
@@ -153,7 +149,6 @@ export default async function handler(req, res) {
           .maybeSingle();
         userId = profile?.id || null;
       }
-      console.log(`[paddle webhook] transaction.completed: subscriptionId=${txn.subscriptionId} priceId=${priceId} tier=${tier} userId=${userId}`);
 
       await supabaseAdmin.from("revenue_events").upsert({
         paddle_event_id: event.eventId,
@@ -180,12 +175,11 @@ export default async function handler(req, res) {
           updated_at: new Date().toISOString(),
         }, { onConflict: "paddle_subscription_id" });
 
-        const { data: updateResult, error: updateError, count } = await supabaseAdmin.from("profiles").update({
+        await supabaseAdmin.from("profiles").update({
           subscription_tier: tier,
           paddle_customer_id: txn.customerId,
           subscription_status: "active",
-        }).eq("id", userId).select();
-        console.log(`[paddle webhook] profile update result: rows=${updateResult?.length} error=${JSON.stringify(updateError)}`);
+        }).eq("id", userId);
       }
 
       if (txn.customData?.kind === "credit_pack" && txn.customData?.userId) {
