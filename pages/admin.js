@@ -84,6 +84,8 @@ const CSS = `
 .status-pill.active{background:rgba(0,229,160,0.15);color:var(--a3)}
 .status-pill.past_due{background:rgba(245,158,11,0.15);color:#f59e0b}
 .status-pill.canceling{background:rgba(160,151,255,0.15);color:var(--a4)}
+.status-pill.paid{background:rgba(0,229,160,0.15);color:var(--a3)}
+.status-pill.failed{background:rgba(239,68,68,0.15);color:#ef4444}
 .status-pill.canceled{background:rgba(239,68,68,0.15);color:#ef4444}
 .status-pill.trialing{background:rgba(91,79,255,0.15);color:#a097ff}
 
@@ -177,6 +179,8 @@ export default function Admin() {
   const [messages, setMessages] = useState(null);
   const [subscriptions, setSubscriptions] = useState(null);
   const [subSummary, setSubSummary] = useState(null);
+  const [paymentHistory, setPaymentHistory] = useState(null);
+  const [paymentSearch, setPaymentSearch] = useState("");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("Overview");
   const [savingTier, setSavingTier] = useState(null);
@@ -199,11 +203,12 @@ export default function Admin() {
     setError("");
     const { data: { session } } = await supabase.auth.getSession();
     const headers = { Authorization: `Bearer ${session?.access_token}` };
-    const [statsRes, usersRes, messagesRes, subsRes] = await Promise.all([
+    const [statsRes, usersRes, messagesRes, subsRes, paymentsRes] = await Promise.all([
       fetch("/api/admin/stats", { headers }).then((r) => r.json()),
       fetch("/api/admin/users", { headers }).then((r) => r.json()),
       fetch("/api/admin/messages", { headers }).then((r) => r.json()),
       fetch("/api/admin/subscriptions", { headers }).then((r) => r.json()),
+      fetch("/api/admin/payment-history", { headers }).then((r) => r.json()),
     ]);
     if (!statsRes.success) { setError(statsRes.error); return; }
     setStats(statsRes.data);
@@ -211,6 +216,7 @@ export default function Admin() {
     setMessages(messagesRes.data || []);
     setSubscriptions(subsRes.data || []);
     setSubSummary(subsRes.summary || null);
+    setPaymentHistory(paymentsRes.data || []);
     const fc = statsRes.data?.revenue?.fixedCosts || { vercel: 0, supabase: 0, other: 0 };
     setCostsForm({ vercel: String(fc.vercel || ""), supabase: String(fc.supabase || ""), other: String(fc.other || "") });
     const pc = statsRes.data?.planConfig || { premiumPrice: 9, proPrice: 29, premiumAnnualPrice: 79, proAnnualPrice: 299, freeDailyLimit: 10, fairUseDailyLimit: 500, creditPackSize: 50, creditPackPrice: 5, trialDayLimits: [3, 2, 1] };
@@ -806,6 +812,48 @@ export default function Admin() {
                       </tbody>
                     </table>
                   )}
+                </div>
+
+                <div className="ad-section-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                  <span>Payment history ({paymentHistory?.length || 0})</span>
+                  <input
+                    type="text"
+                    placeholder="Filter by email…"
+                    value={paymentSearch}
+                    onChange={(e) => setPaymentSearch(e.target.value)}
+                    className="settings-input"
+                    style={{ width: 220, textTransform: "none", fontWeight: 400 }}
+                  />
+                </div>
+                <div className="ad-section" style={{ padding: 0, overflow: "hidden" }}>
+                  {(() => {
+                    const filtered = (paymentHistory || []).filter((p) => p.email?.toLowerCase().includes(paymentSearch.toLowerCase()));
+                    if (!paymentHistory || paymentHistory.length === 0) {
+                      return <div className="ad-empty" style={{ padding: 24 }}>No payments yet.</div>;
+                    }
+                    if (filtered.length === 0) {
+                      return <div className="ad-empty" style={{ padding: 24 }}>No payments match "{paymentSearch}".</div>;
+                    }
+                    return (
+                      <table className="ad-table">
+                        <thead><tr><th style={{ paddingLeft: 20 }}>Email</th><th>Plan</th><th>Status</th><th>Amount</th><th>Fee est.</th><th>Date</th></tr></thead>
+                        <tbody>
+                          {filtered.map((p) => (
+                            <tr key={p.id}>
+                              <td style={{ paddingLeft: 20 }}>{p.email}</td>
+                              <td>{p.tier ? <span className={`tier-pill ${p.tier}`}>{p.tier}</span> : "—"}</td>
+                              <td><span className={`status-pill ${p.status}`}>{p.status}</span></td>
+                              <td style={{ color: Number(p.amount) < 0 ? "#ef4444" : "var(--text)", fontWeight: 600 }}>
+                                {Number(p.amount) < 0 ? `-$${Math.abs(p.amount).toFixed(2)} (refund)` : `$${Number(p.amount).toFixed(2)}`}
+                              </td>
+                              <td style={{ color: "var(--text3)" }}>${Number(p.fee_estimate || 0).toFixed(2)}</td>
+                              <td style={{ color: "var(--text3)" }}>{new Date(p.created_at).toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    );
+                  })()}
                 </div>
               </>
             )}
