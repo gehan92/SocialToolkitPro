@@ -9,7 +9,7 @@ const CSS = `
   --a1:#5b4fff;--a1l:#7c6dff;
   --fh:'Clash Display',sans-serif;--fb:'Cabinet Grotesk',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;min-height:100vh;display:flex;align-items:center;justify-content:center}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center}
 .auth-wrap{width:100%;max-width:400px;padding:24px}
 .auth-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px;font-family:var(--fh);font-size:18px;font-weight:700;text-decoration:none;color:var(--text)}
 .auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px}

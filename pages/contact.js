@@ -10,7 +10,7 @@ const CSS = `
   --a1:#5b4fff;--a1l:#7c6dff;--a3:#00e5a0;
   --fh:'Clash Display',sans-serif;--fb:'Cabinet Grotesk',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.75;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.75;min-height:100vh;min-height:100dvh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 nav{position:sticky;top:0;z-index:100;background:rgba(6,6,10,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px}
 .nav-wrap{max-width:800px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}

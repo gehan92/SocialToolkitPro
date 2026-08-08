@@ -370,7 +370,7 @@ footer{
   .steps{grid-template-columns:1fr}
   .step-card{padding:20px}
   .tool-tabs{gap:4px;padding:4px;border-radius:14px}
-  .tab-btn{font-size:11px;padding:8px 6px;border-radius:9px}
+  .tab-btn{font-size:11px;padding:11px 6px;border-radius:9px}
   .input-panel,.output-panel{padding:16px}
   .panel-title{font-size:14px}
   .generate-btn{font-size:13px;padding:12px}

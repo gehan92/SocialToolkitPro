@@ -10,7 +10,7 @@ const CSS = `
   --a1:#5b4fff;--a1l:#7c6dff;--a2:#ff4f9b;--a3:#00e5a0;--a4:#ffb347;
   --fh:'Clash Display',sans-serif;--fb:'Cabinet Grotesk',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.75;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.75;min-height:100vh;min-height:100dvh}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 .orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:0.1}
 .orb1{width:500px;height:500px;background:var(--a1);top:-150px;left:-100px}

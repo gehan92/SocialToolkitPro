@@ -23,6 +23,12 @@ const CSS = `
 .cal-del{font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;flex-shrink:0}
 .cal-del:hover{color:#fca5a5}
 .upgrade-banner{background:linear-gradient(135deg,rgba(91,79,255,0.15),rgba(255,79,155,0.08));border:1px solid rgba(91,79,255,0.25);border-radius:16px;padding:32px;text-align:center}
+@media(max-width:480px){
+  .cal-wrap{padding:32px 16px 60px}
+  .cal-grid{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+  .cal-panel{padding:16px}
+  .cal-del{padding:10px 8px;min-height:40px}
+}
 `;
 
 function toDateStr(d) {

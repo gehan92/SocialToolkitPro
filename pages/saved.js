@@ -20,6 +20,11 @@ const CSS = `
 .saved-btn:hover{color:var(--text);border-color:var(--border3)}
 .saved-btn.danger:hover{color:#fca5a5;border-color:rgba(239,68,68,0.4)}
 .upgrade-banner{background:linear-gradient(135deg,rgba(91,79,255,0.15),rgba(255,79,155,0.08));border:1px solid rgba(91,79,255,0.25);border-radius:16px;padding:24px;text-align:center;margin-bottom:24px}
+@media(max-width:480px){
+  .saved-wrap{padding:32px 16px 60px}
+  .saved-item{padding:16px 18px}
+  .saved-btn{padding:10px 16px;min-height:40px}
+}
 `;
 
 const TYPE_LABELS = { hashtag: "Hashtags", caption: "Caption", bio: "Bio", ideas: "Video Ideas" };
