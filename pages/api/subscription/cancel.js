@@ -1,4 +1,4 @@
-import { stripe } from "../../../lib/stripeClient";
+import { paddle } from "../../../lib/paddleClient";
 import { supabaseAdmin } from "../../../lib/supabaseAdmin";
 import { getAuthUser } from "../../../lib/getAuthUser";
 
@@ -12,46 +12,52 @@ export default async function handler(req, res) {
     return res.status(401).json({ success: false, error: "Please log in." });
   }
 
-  if (!stripe) {
-    return res.status(500).json({ success: false, error: "Stripe isn't configured yet." });
+  if (!paddle) {
+    return res.status(500).json({ success: false, error: "Paddle isn't configured yet." });
   }
 
-  // Get the stripe_customer_id from the user's profile
   const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("stripe_customer_id, subscription_tier")
+    .select("subscription_tier")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.stripe_customer_id) {
-    return res.status(404).json({ success: false, error: "No billing account found." });
-  }
-
-  if (profile.subscription_tier === "free") {
+  if (!profile || profile.subscription_tier === "free") {
     return res.status(400).json({ success: false, error: "You are already on the Free plan." });
   }
 
+  const { data: sub } = await supabaseAdmin
+    .from("subscriptions")
+    .select("paddle_subscription_id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!sub?.paddle_subscription_id) {
+    return res.status(404).json({ success: false, error: "No active subscription found." });
+  }
+
   try {
-    // List active subscriptions for this customer in Stripe
-    const subscriptions = await stripe.subscriptions.list({
-      customer: profile.stripe_customer_id,
-      status: "active",
-      limit: 1,
-    });
+    // Cancel at the end of the current billing period, not immediately -
+    // matches the "Cancellation and refunds" promise in /terms (Section 4):
+    // access continues until the period they already paid for ends.
+    await paddle.subscriptions.cancel(sub.paddle_subscription_id, { effectiveFrom: "next_billing_period" });
 
-    const sub = subscriptions.data[0];
-    if (!sub) {
-      return res.status(404).json({ success: false, error: "No active subscription found in Stripe." });
-    }
-
-    // Cancel at period end — user keeps access until billing cycle ends
-    await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true });
-
-    // Update our subscriptions table
+    // Reflect the pending cancellation right away rather than waiting for the
+    // webhook round-trip. Tier is left untouched on purpose - the account
+    // stays on its current plan until subscription.canceled actually fires
+    // (see pages/api/webhooks/paddle.js), which is when tier flips to free.
     await supabaseAdmin
       .from("subscriptions")
       .update({ status: "canceling" })
-      .eq("stripe_subscription_id", sub.id);
+      .eq("paddle_subscription_id", sub.paddle_subscription_id);
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ subscription_status: "canceling" })
+      .eq("id", user.id);
 
     return res.status(200).json({ success: true });
   } catch (e) {

@@ -301,9 +301,9 @@ export default function Account() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
       });
       const d = await r.json();
-      if (!d.success) { showToast(d.error, "error"); } 
+      if (!d.success) { showToast(d.error, "error"); }
       else {
-        setProfile((p) => ({ ...p, subscription_tier: "free" }));
+        setProfile((p) => ({ ...p, subscription_status: "canceling" }));
         showToast("Subscription cancelled. You'll keep access until your billing period ends.");
       }
     } catch (e) {
@@ -324,6 +324,7 @@ export default function Account() {
   }
 
   const tier = profile?.subscription_tier ?? "free";
+  const isCanceling = profile?.subscription_status === "canceling";
   const trialDayLimits = planConfig?.trialDayLimits || [3, 2, 1];
   const trialStartedAt = profile?.trial_started_at || user.created_at;
   const trialDay = Math.floor((Date.now() - new Date(trialStartedAt).getTime()) / 86400000) + 1;
@@ -509,7 +510,11 @@ export default function Account() {
             return (
               <div key={plan.id} className={`plan-card plan-${plan.id}${isCurrent ? " current" : ""}`}>
                 {plan.popular && !isCurrent && !isAdmin && <div className="plan-popular-tag">Most Popular</div>}
-                {isCurrent && <div className="plan-popular-tag" style={{ background: "var(--a3)", color: "#06060a" }}>Current Plan</div>}
+                {isCurrent && (
+                  <div className="plan-popular-tag" style={{ background: isCanceling ? "var(--text3)" : "var(--a3)", color: "#06060a" }}>
+                    {isCanceling ? "Cancels at period end" : "Current Plan"}
+                  </div>
+                )}
 
                 <div className="plan-name" style={{ color: plan.color }}>{plan.name}</div>
                 <div className="plan-price" style={{ color: plan.color }}>{displayPrice}</div>
@@ -542,8 +547,8 @@ export default function Account() {
                     {upgrading === plan.id ? "Redirecting…" : `Upgrade to ${plan.name} →`}
                   </button>
                 ) : (
-                  <button className="plan-btn btn-downgrade" onClick={handleCancel} disabled={cancelling || plan.id !== "free" }>
-                    Downgrade
+                  <button className="plan-btn btn-downgrade" onClick={handleCancel} disabled={cancelling || isCanceling || plan.id !== "free"}>
+                    {isCanceling ? "Cancellation scheduled" : "Downgrade"}
                   </button>
                 )}
               </div>
@@ -573,10 +578,12 @@ export default function Account() {
             <div className="danger-card">
               <div className="danger-info">
                 <strong>Cancel subscription</strong>
-                You'll keep {tier} access until the end of your current billing period. After that your account reverts to Free.
+                {isCanceling
+                  ? "Your cancellation is already scheduled. You'll keep access until the end of your current billing period, then your account reverts to Free."
+                  : `You'll keep ${tier} access until the end of your current billing period. After that your account reverts to Free.`}
               </div>
-              <button className="btn-danger" onClick={handleCancel} disabled={cancelling}>
-                {cancelling ? "Cancelling…" : "Cancel subscription"}
+              <button className="btn-danger" onClick={handleCancel} disabled={cancelling || isCanceling}>
+                {isCanceling ? "Cancellation scheduled" : cancelling ? "Cancelling…" : "Cancel subscription"}
               </button>
             </div>
           </>
