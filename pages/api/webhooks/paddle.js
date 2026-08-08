@@ -180,11 +180,12 @@ export default async function handler(req, res) {
           updated_at: new Date().toISOString(),
         }, { onConflict: "paddle_subscription_id" });
 
-        await supabaseAdmin.from("profiles").update({
+        const { data: updateResult, error: updateError, count } = await supabaseAdmin.from("profiles").update({
           subscription_tier: tier,
           paddle_customer_id: txn.customerId,
           subscription_status: "active",
-        }).eq("id", userId);
+        }).eq("id", userId).select();
+        console.log(`[paddle webhook] profile update result: rows=${updateResult?.length} error=${JSON.stringify(updateError)}`);
       }
 
       if (txn.customData?.kind === "credit_pack" && txn.customData?.userId) {
